@@ -30,7 +30,7 @@ class UserSkillDomainRow extends React.Component {
         }
         return (
             <tr>
-                <th colSpan="4" style={domainStyles}  >
+                <th colSpan="6" style={domainStyles}  >
                     <Button
                         variant="link"
                         onClick={event => handleEpandRow(event, domain)}>

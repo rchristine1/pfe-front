@@ -1,5 +1,5 @@
 import React from 'react';
-export class Enjoy extends React.Component {
+export class Error extends React.Component {
 
     constructor(){
       super()

@@ -16,6 +16,7 @@ class Login extends React.Component {
     this.handleCloseModal = this.handleCloseModal.bind(this)
   }
 
+
   
   handleChange(event) {
     let currentState = { ...this.state.userData };
