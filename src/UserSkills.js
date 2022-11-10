@@ -15,9 +15,19 @@ function UserSkillTable(props) {
   let [userStatusCampaign, setUserStatusCampaign] = useState('')
   let userIdParam = useParams();
   let history = props.history
+  //let firstname = props.userInfo.firstname;
+  //let lastname = props.userInfo.lastname.toUpperCase();
+  let firstname = sessionStorage.getItem('firstname');
+  let lastname = sessionStorage.getItem('lastname').toUpperCase();
+  //console.log("UserInfo",props.userInfo)
 
-  let titleH1Style = { color: '#1c2f2f' }
-  let tableStyle = {borderSpacing: '0px 5px',borderCollapse : 'separate'}
+  let titleH1Style = { color: '#131f1f' }
+  let tableStyle = { borderSpacing: '0px 5px', borderCollapse: 'separate' }
+  let columnStyle = { color: '#4c7f7f' }
+  let campaignStyle = { color: '#609f9f' }
+  let cardTitleStyle = { color: '#609f9f' }
+  let cardSubTitleStyle = { color: '#bfd8d8' }
+  let rowTitleStyle = { backgroundColor: '#eff5f5' }
 
   useEffect(() => {
     axios('/teammembers/' + Object.values(userIdParam), {
@@ -55,7 +65,7 @@ function UserSkillTable(props) {
         }
       }
       )
-  }, [userSkills])
+  }, [])
 
   const rows = [];
   let lastDomain = null;
@@ -109,17 +119,31 @@ function UserSkillTable(props) {
 
   return (
     <div className="container py-5 h-100">
-      <h1 style={titleH1Style}>MY SKILLS</h1>
-
+      <div className="container pt-4" style={rowTitleStyle}>
+        <div className="row align-items-center justify-content-start pb-4" >
+          <div className='col-6'>
+            <h1 style={titleH1Style}>MY SKILLS</h1>
+          </div>
+          <div className="col-4 offset-md-2">
+            <div className="card" >
+              <div className="card-body py-0">
+                <h5 className="card-title text-end" style={cardTitleStyle}>{firstname} {lastname}</h5>
+                <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>Card subtitle</h6>
+                <p className="card-text"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="col-md-12">
         <Table hover table-condensed="true" style={tableStyle}>
           <thead>
-            <tr>
+            <tr style={columnStyle} >
               <th >#</th>
               <th >Skill</th>
-              <th >Mark</th>
-              <th >Status</th>
-              <th >Actions</th>
+              <th className="text-center">Mark</th>
+              <th className="text-center">Status</th>
+              <th className="text-center">Actions</th>
             </tr>
           </thead>
           <tbody  >{rows}</tbody>
@@ -133,7 +157,7 @@ function UserSkillTable(props) {
               type="submit" value="Submitted" disabled /> :
               <input id="{inputStatusCampaign}"
                 className="btn btn-dark btn-sm btn-block w-100"
-                type="submit" value="Submit the campaign" />
+                type="submit" value="Submit the campaign" style={campaignStyle} />
             }
           </form>
         </div>

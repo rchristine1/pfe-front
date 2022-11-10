@@ -17,8 +17,10 @@ function UserSkillRow(props) {
   let selectedStatusId = "userSkillStatus" + userSkill.userSkillId
   let valueUserSkillStatus = userSkill.statusSkill
 
-  let rowStyles = { fontSize: "0.75em" };
-  let buttonFilledStyle = { backgroundColor: "#dfecec" }
+  let rowStyles = { fontSize: "0.75em",color:'#131f1f' };
+  let buttonFilledStyle = { backgroundColor: "#eff5f5",fontSize:'1.2em',color:'#131f1f' }
+  let actionStyle = {fontSize : "1em"}
+  
 
   console.log("inputMarkId", inputMarkId)
   console.log("selectedStatusId", selectedStatusId)
@@ -74,35 +76,35 @@ function UserSkillRow(props) {
   
   return (
     expandedRows.includes(userSkill.labelDomain) ?
-      <tr key={userSkill.userSkillId} >
+      <tr key={userSkill.userSkillId} style={rowStyles}>
         <td hidden>{userSkill.labelDomain}</td>
         <td className="col-1" style={rowStyles}>{userSkill.userSkillId}</td>
         <td className="col-2" style={rowStyles}>{userSkill.label}</td>
         <td className="col-1" style={rowStyles}>
-          <form className="row "
+          <form className="row text-center"
             onChange={event => handleChange(event, userSkill.userSkillId)}
           >
             <label className="" htmlFor='userskillmark'></label>
             {markValue !== -1 || ((markValue >= 0) && (markValue <= 2))
               ? (
                 <input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledStyle}
-                  type="number" defaultValue={userSkill.mark} name="userskillmark"
+                  type="number" defaultValue={userSkill.mark} name="userskillmark" 
                   min="0" max="2"
                 />
               ) : (
                 <input id={inputMarkId} className="form-control form-control-sm border-danger "
-                  type="number" defaultValue=" " name="userskillmark"
+                  type="number" defaultValue=" " name="userskillmark" style={rowStyles}
                   min="0" max="2"
                 />
               )}
           </form></td>
-        <td className="col-1" style={rowStyles}>{userSkill.statusSkill}
+        <td className="col-1 text-center" style={rowStyles}>{userSkill.statusSkill}
         </td>
         <td className="col-1" style={rowStyles}>
           <form className="row "
             onChange={event => handleChangeStatus(event, userSkill.userSkillId)}
           >
-            <select className="form-control form-control-sm p-0" name="updatedStatus" id={selectedStatusId}>
+            <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}>
               <option selected>{userSkill.statusSkill}</option>
               <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
               <option value={USERSKILL_STATUS_VALIDATED}>{USERSKILL_STATUS_VALIDATED}</option>

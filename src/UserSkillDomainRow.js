@@ -4,7 +4,7 @@ import { RiArrowDownCircleFill } from 'react-icons/ri';
 import { RiArrowUpCircleFill } from 'react-icons/ri';
 
 let iconStyles = { color: "grey", fontSize: "1.25em" };
-let domainStyles = { color: '#606c6c', backgroundColor: '#dfecec' };
+let domainStyles = { color: '#395f5f', backgroundColor: '#bfd8d8' };
 
 class UserSkillDomainRow extends React.Component {
 

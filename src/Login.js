@@ -36,10 +36,13 @@ class Login extends React.Component {
           const jwt = bearerToken.slice(7, bearerToken.length);
           sessionStorage.setItem(AUTH_TOKEN_KEY, jwt)
         }
-        this.props.setUserInfo(response.data.userName)
+        this.props.setUserInfo(response.data)
         sessionStorage.setItem("id", response.data.id); 
-        let userId = sessionStorage.getItem('id');    
-        console.log("userId",userId);
+        sessionStorage.setItem("firstname", response.data.firstname);
+        sessionStorage.setItem("lastname", response.data.lastname);
+        let userId = sessionStorage.getItem('id');
+        //console.log("userId",userId);
+        //this.props.history(`/userskills/${this.props.userInfo.id}`)
         this.props.history(`/userskills/${userId}`)
       }).catch(() => {
         this.setState({ showModal: true })

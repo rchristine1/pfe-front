@@ -20,7 +20,7 @@ function App() {
   const history = useNavigate();
   let styleTitle = { color: '#609f9f', fontSize: '1.75em' }
 
-  /*const UserConnected = ({ setUserInfo, userInfo }) => {
+  const UserConnected = ({ setUserInfo, userInfo }) => {
     const history = useNavigate();
     let location = useLocation();
     //let authToken = sessionStorage.getItem('jhi-authenticationToken')
@@ -30,8 +30,11 @@ function App() {
 
     useEffect(() => {
       setUserInfo(null)
+      const token = sessionStorage.getItem(AUTH_TOKEN_KEY)
+      
       axios('/isConnected', {
-        method: 'GET'
+        method: 'GET',
+        headers: {"Authorization": "Bearer " + token}
       })
         .then(response => {
           setUserInfo(response.data);
@@ -45,12 +48,9 @@ function App() {
     }, [history, setUserInfo, location.pathname]);
 
 
-    return (<>
-      <div>
-        <p>{userInfo}</p>
-      </div>
+    return (<>      
     </>)
-  }*/
+  }
   /*useEffect(() => {
 
     axios.interceptors.request.use(function (request) {
@@ -80,7 +80,7 @@ function App() {
 
   return (
     <div>
-
+      <UserConnected setUserInfo={setUserInfo} userinfo={userInfo}/>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
         <span className="px-6 me-2 ms-4">
           <img src="/MTUP.png" alt="MTUP" width="30.75em" height="30.75em" />
@@ -103,10 +103,10 @@ function App() {
       </nav>
       <div className="App">
         <Routes>
-          <Route path="/userskills/:id" element={<UserSkillTable  history={history}/>} />
+          <Route path="/userskills/:id" element={<UserSkillTable  history={history} userInfo={userInfo}/>} />
           <Route path="/login" element={<Login setUserInfo={setUserInfo} />} />
           <Route path="/error" element={<Error />} />
-          <Route path="*" element={<Login setUserInfo={setUserInfo} />} />
+          <Route path="*" element={<Login setUserInfo={setUserInfo} userInfo={userInfo}/>} />
 
         </Routes>
       </div>
