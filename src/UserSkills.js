@@ -6,7 +6,6 @@ import { AUTH_TOKEN_KEY } from './App'
 import './UserSkills.css';
 import UserSkillRow from './UserSkill';
 import UserSkillDomainRow from './UserSkillDomainRow';
-import UserConnected from './UserConnected';
 import { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 
@@ -17,8 +16,9 @@ function UserSkillTable(props) {
   let history = props.history
   //let firstname = props.userInfo.firstname;
   //let lastname = props.userInfo.lastname.toUpperCase();
-  let firstname = sessionStorage.getItem('firstname');
-  let lastname = sessionStorage.getItem('lastname').toUpperCase();
+  let firstname = JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY)).firstname;
+  let lastname = JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY)).lastname.toUpperCase();
+  let token = (JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY))).access
   //console.log("UserInfo",props.userInfo)
 
   let titleH1Style = { color: '#131f1f' }
@@ -28,13 +28,15 @@ function UserSkillTable(props) {
   let cardTitleStyle = { color: '#609f9f' }
   let cardSubTitleStyle = { color: '#bfd8d8' }
   let rowTitleStyle = { backgroundColor: '#eff5f5' }
+ 
 
   useEffect(() => {
+
     axios('/teammembers/' + Object.values(userIdParam), {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
-        "Authorization": "Bearer " + sessionStorage.getItem(AUTH_TOKEN_KEY)
+        "Authorization": "Bearer " + token
       }
     })
       .then((response) => {
@@ -54,7 +56,7 @@ function UserSkillTable(props) {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
-        "Authorization": "Bearer " + sessionStorage.getItem(AUTH_TOKEN_KEY)
+        "Authorization": "Bearer " + token
       }
     })
       .then((response) => {
@@ -101,7 +103,7 @@ function UserSkillTable(props) {
     axios('/teammembers/' + Object.values(userIdParam) + "/statusCurrentCampaign", {
       method: 'patch',
       headers: {
-        "Authorization": "Bearer " + sessionStorage.getItem('jhi-authenticationToken')
+        "Authorization": "Bearer " + token
       },
       data: { statusUserCampaign: "SUBMITTED" }
     }
@@ -151,7 +153,7 @@ function UserSkillTable(props) {
       </div>
       <div className="row">
         <div className="col-md-12">
-          <form className="col-md-2 " onSubmit={onSubmit}>
+          <form className="col-md-2 Hover" onSubmit={onSubmit}>
             {userStatusCampaign === "SUBMITTED" ? <input id="{inputStatusCampaign}"
               className="btn btn-secondary btn-sm btn-block w-100"
               type="submit" value="Submitted" disabled /> :

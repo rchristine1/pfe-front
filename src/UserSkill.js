@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { AUTH_TOKEN_KEY } from './App'
 
 
 function UserSkillRow(props) {
@@ -30,11 +31,11 @@ function UserSkillRow(props) {
 
     valueUserSkillStatus = document.getElementById(selectedStatusId).value
     console.log("selectedStatusId", valueUserSkillStatus)
-
+    let token = (JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY))).access
     axios('/userskills/' + userSkillId + "/statusSkill", {
       method: 'patch',
       headers: {
-        "Authorization": "Bearer " + sessionStorage.getItem('jhi-authenticationToken')
+        "Authorization": "Bearer " + token
       },
       data: { statusSkill: valueUserSkillStatus }
     }

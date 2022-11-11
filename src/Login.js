@@ -34,14 +34,22 @@ class Login extends React.Component {
         const bearerToken = response?.headers?.authorization;
         if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
           const jwt = bearerToken.slice(7, bearerToken.length);
-          sessionStorage.setItem(AUTH_TOKEN_KEY, jwt)
+          //sessionStorage.setItem(AUTH_TOKEN_KEY, jwt)
+          response.data["access"] = jwt ;
+          let responseData = JSON.stringify(response.data)
+          console.log("Login response Data",responseData)
+          //responseData["access"]=jwt; 
+          console.log("Login response Data",responseData)
+          sessionStorage.setItem(AUTH_TOKEN_KEY, responseData)
+          
         }
-        this.props.setUserInfo(response.data)
-        sessionStorage.setItem("id", response.data.id); 
+        //this.props.setUserInfo(response.data)
+        /*sessionStorage.setItem("id", response.data.id); 
         sessionStorage.setItem("firstname", response.data.firstname);
-        sessionStorage.setItem("lastname", response.data.lastname);
-        let userId = sessionStorage.getItem('id');
-        //console.log("userId",userId);
+        sessionStorage.setItem("lastname", response.data.lastname);*/
+        //let userId = sessionStorage.getItem('id');
+        let userId = (JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY))).id;
+        console.log("userId",userId);
         //this.props.history(`/userskills/${this.props.userInfo.id}`)
         this.props.history(`/userskills/${userId}`)
       }).catch(() => {
