@@ -10,28 +10,23 @@ import TeamMemberSkills from './TeamMemberSkills';
 
 function SkillsToValidate(props) {
     let [teamMembersToValidate, setTeamMembersToValidate] = useState([])
-    let history = props.history
-    let firstname = JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY)).firstname;
-    let lastname = JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY)).lastname.toUpperCase();
-    let token = (JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY))).access
+    let history = props.history    
+    let firstname = props.userFirstName
+    let lastname = props.userLastName
+    let team = props.team
+    let userIdParam = useParams();
 
-    let titleH1Style = { color: '#131f1f' }
-    let tableStyle = { borderSpacing: '0px 5px', borderCollapse: 'separate' }
-    let columnStyle = { color: '#4c7f7f' }
-    let campaignStyle = { color: '#609f9f' }
+    let titleH1Style = { color: '#131f1f',letterSpacing:'5px',fontSize:'1.75em' }
     let cardTitleStyle = { color: '#609f9f' }
     let cardSubTitleStyle = { color: '#bfd8d8' }
     let rowTitleStyle = { backgroundColor: '#eff5f5' }
     let activitiesStyle = { marginTop: '30px' }
-    let activitiesButtonStyle = { color: '#ffff', backgroundColor: '#609f9f' }
+    
   
 
     useEffect(() => {
-        axios('/teammembers/statuscampaign', {
+        axios('/teammembers/statuscampaign/' + Object.values(userIdParam), {
             method: 'GET',
-            headers: {
-                "Authorization": "Bearer " + token
-            },
             params: {
                 status: 'SUBMITTED'
             },
@@ -58,7 +53,7 @@ function SkillsToValidate(props) {
                         <div className="card" >
                             <div className="card-body py-0">
                                 <h5 className="card-title text-end" style={cardTitleStyle}>{firstname} {lastname}</h5>
-                                <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>Card subtitle</h6>
+                                <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>{team}</h6>
                                 <p className="card-text"></p>
                             </div>
                         </div>

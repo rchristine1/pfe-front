@@ -2,11 +2,16 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AUTH_TOKEN_KEY } from './App'
+import { ROLE_TEAMMEMBER } from './Login'
+import { ROLE_TEAMLEADER } from './Login'
 
 
 function UserSkillRow(props) {
   let [userSkill, setUserSkill] = useState(props.userSkill)
-  
+  let actionState = props.actionState
+  console.log("actionState",actionState)
+  console.log("ROLE_TEAMLEADER",ROLE_TEAMLEADER)
+
   let expandedRows = props.expandedRows
 
   let inputMarkId = "userSkillMark" + userSkill.userSkillId
@@ -18,10 +23,10 @@ function UserSkillRow(props) {
   let selectedStatusId = "userSkillStatus" + userSkill.userSkillId
   let valueUserSkillStatus = userSkill.statusSkill
 
-  let rowStyles = { fontSize: "0.75em",color:'#131f1f' };
-  let buttonFilledStyle = { backgroundColor: "#eff5f5",fontSize:'1.2em',color:'#131f1f' }
-  let actionStyle = {fontSize : "1em"}
-  
+  let rowStyles = { fontSize: "0.75em", color: '#131f1f' };
+  let buttonFilledStyle = { backgroundColor: "#eff5f5", fontSize: '1.2em', color: '#131f1f' }
+  let actionStyle = { fontSize: "1em" }
+
 
   console.log("inputMarkId", inputMarkId)
   console.log("selectedStatusId", selectedStatusId)
@@ -58,9 +63,6 @@ function UserSkillRow(props) {
 
     axios('/userskills/' + userSkillId + "/mark", {
       method: 'patch',
-      headers: {
-        "Authorization": "Bearer " + sessionStorage.getItem('jhi-authenticationToken')
-      },
       data: { mark: markValue }
     }
     )
@@ -74,7 +76,7 @@ function UserSkillRow(props) {
         }
       })
   }
-  
+
   return (
     expandedRows.includes(userSkill.labelDomain) ?
       <tr key={userSkill.userSkillId} style={rowStyles}>
@@ -89,7 +91,7 @@ function UserSkillRow(props) {
             {markValue !== -1 || ((markValue >= 0) && (markValue <= 2))
               ? (
                 <input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledStyle}
-                  type="number" defaultValue={userSkill.mark} name="userskillmark" 
+                  type="number" defaultValue={userSkill.mark} name="userskillmark"
                   min="0" max="2"
                 />
               ) : (
@@ -102,17 +104,18 @@ function UserSkillRow(props) {
         <td className="col-1 text-center" style={rowStyles}>{userSkill.statusSkill}
         </td>
         <td className="col-1" style={rowStyles}>
-          <form className="row "
-            onChange={event => handleChangeStatus(event, userSkill.userSkillId)}
-          >
-            <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}>
-              <option selected>{userSkill.statusSkill}</option>
-              <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
-              <option value={USERSKILL_STATUS_VALIDATED}>{USERSKILL_STATUS_VALIDATED}</option>
-            </select>
-            <label className="" htmlFor='updatedStatus'></label>
+          {actionState === ROLE_TEAMLEADER ?
+            <form className="row "
+              onChange={event => handleChangeStatus(event, userSkill.userSkillId)}
+            >
+              <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}>
+                <option selected>{userSkill.statusSkill}</option>
+                <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
+                <option value={USERSKILL_STATUS_VALIDATED}>{USERSKILL_STATUS_VALIDATED}</option>
+              </select>
+              <label className="" htmlFor='updatedStatus'></label>
 
-          </form>
+            </form> : null}
         </td>
         <td className="col-1" style={rowStyles}></td>
       </tr> : null

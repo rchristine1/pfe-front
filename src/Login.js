@@ -4,10 +4,11 @@ import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
 import { AUTH_TOKEN_KEY } from './App'
 import './Login.css';
-
-
+export const ROLE_TEAMMEMBER = "Team Member" 
+export const ROLE_TEAMLEADER = "Team Leader" 
 
 class Login extends React.Component {
+  
   constructor() {
     super();
     this.state = { userData: {}, showModal: false }
@@ -16,13 +17,12 @@ class Login extends React.Component {
     this.handleCloseModal = this.handleCloseModal.bind(this)
   }
 
-
-  
   handleChange(event) {
     let currentState = { ...this.state.userData };
     currentState[event.target.name] = event.target.value;
     this.setState({ userData: currentState })
   }
+
 
   onSubmit(event) {
     event.preventDefault();
@@ -34,24 +34,21 @@ class Login extends React.Component {
         const bearerToken = response?.headers?.authorization;
         if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
           const jwt = bearerToken.slice(7, bearerToken.length);
-          //sessionStorage.setItem(AUTH_TOKEN_KEY, jwt)
-          response.data["access"] = jwt ;
-          let responseData = JSON.stringify(response.data)
-          console.log("Login response Data",responseData)
-          //responseData["access"]=jwt; 
-          console.log("Login response Data",responseData)
-          sessionStorage.setItem(AUTH_TOKEN_KEY, responseData)
-          
+          sessionStorage.setItem(AUTH_TOKEN_KEY, jwt)      
         }
-        //this.props.setUserInfo(response.data)
-        /*sessionStorage.setItem("id", response.data.id); 
-        sessionStorage.setItem("firstname", response.data.firstname);
-        sessionStorage.setItem("lastname", response.data.lastname);*/
-        //let userId = sessionStorage.getItem('id');
-        let userId = (JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY))).id;
-        console.log("userId",userId);
-        //this.props.history(`/userskills/${this.props.userInfo.id}`)
-        this.props.history(`/userskills/${userId}`)
+        this.props.setUserFirstName(response.data.firstname)
+        this.props.setUserLastName(response.data.lastname)
+        this.props.setUserId(response.data.id)
+        let userRole = response.data.authorities
+        let userRoleTab = userRole.map( function(e) {return e.authority} )
+        
+        if (userRoleTab.includes("ROLE_TEAMMEMBER")) {
+          this.props.setUserRoles(ROLE_TEAMMEMBER)
+          this.props.history(`/welcometeammember`)
+        } else if (userRoleTab.includes("ROLE_TEAMLEADER")) {
+          this.props.setUserRoles(ROLE_TEAMLEADER)
+          this.props.history(`/welcometeamleader`)
+        }
       }).catch(() => {
         this.setState({ showModal: true })
       })
@@ -64,10 +61,10 @@ class Login extends React.Component {
   render() {
     const title = "Login incorrect"
     const bodyTxt = "Login ou mot de passe incorrect"
-    let titleH1 = {color:'#609f9f'}
+
+    let titleH1 = { color: '#609f9f' }
     return (
       <>
-
         <div className="container py-5 h-100">
           <div className="row d-flex justify-content-center align-items-center h-100">
             <div className="col col-xl-10">
@@ -78,7 +75,6 @@ class Login extends React.Component {
                       className="card-img-left img-fluid rounded-t-4 h-100"
                       src="/people-hands.jpg"
                       alt="team.img"
-
                     />
                   </div>
                   <div className="col-md-6 col-lg-7 d-flex align-items-center">

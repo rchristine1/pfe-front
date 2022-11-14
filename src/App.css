@@ -19,4 +19,13 @@
   transform:scale(1.08);
 }
 
+.picture-style{
+  animation: bounce 0.9s ease infinite;
+}
+
+@keyframes bounce{
+  from {transform: translateY(0);}
+  to   {transform: translateY(-6px);}
+}
+
 

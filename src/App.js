@@ -11,19 +11,24 @@ import Header from './Header';
 import { Error } from './Error';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
+import { BsFilePerson } from 'react-icons/bs';
 import UserConnected from './UserConnected';
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 export const AUTH_TOKEN_KEY = 'mtup-authenticationToken';
 
 function App() {
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(false)
-  const history = useNavigate();
-  let styleTitle = { color: '#609f9f', fontSize: '1.75em', letterSpacing: '6px' }
-  let pictureStyle = { marginBottom: '5px' }
+  let [userFirstName, setUserFirstName] = useState(null);
+  let [userLastName, setUserLastName] = useState(null);
+  let [userId, setUserId] = useState(null);
+  let [userRoles, setUserRoles] = useState(null);
+  let [manager, setManager] = useState(null);
+  let [team, setTeam] = useState(null);
+  let [loading, setLoading] = useState(false)
+  let history = useNavigate();
+  let location = useLocation();
 
-  const UserConnected = ({ setUserInfo, userInfo }) => {
+  /*12-11 boucle et je ne sais pas pourquoi const UserConnected = ({ setUserInfo, userInfo }) => {
     const history = useNavigate();
     let location = useLocation();
     //let authToken = sessionStorage.getItem('jhi-authenticationToken')
@@ -33,7 +38,7 @@ function App() {
 
     useEffect(() => {
       setUserInfo(null)
-      let token = null;
+      /*12-11let token = null;
       if (sessionStorage.getItem(AUTH_TOKEN_KEY) != null) {
         console.log("IsConnected", sessionStorage)
         token = (JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY))).access
@@ -42,7 +47,7 @@ function App() {
 
       axios('/isConnected', {
         method: 'GET',
-        headers: { "Authorization": "Bearer " + token }
+        //12-11headers: { "Authorization": "Bearer " + token }
       })
         .then(response => {
           setUserInfo(response.data);
@@ -57,9 +62,11 @@ function App() {
 
 
     return (<>
+    
     </>)
-  }
-  /*useEffect(() => {
+  }*/
+  //12-11
+  useEffect(() => {
 
     axios.interceptors.request.use(function (request) {
       const token = sessionStorage.getItem(AUTH_TOKEN_KEY)
@@ -71,7 +78,7 @@ function App() {
     }, (error) => {
       if (error.response.status == 403) {
         console.log("Erreur 403")
-         
+
       }
       setLoading(false)
       return Promise.reject(error);
@@ -84,28 +91,14 @@ function App() {
       setLoading(false)
       return Promise.reject(error);
     });
-  })*/
+  })
+
 
   return (
-    <div>
-
-      <header className="bg-dark my-6" >
-        <div className="container">
-          <div className="row">
-            <div className="col-md-4 text-center"></div>
-            <div className="col-md-4">
-              <a href="/login" className="navbar-brand " style={styleTitle} >
-                MY TEAM
-                <span className="px-6 me-0 ms-2 mt-2">
-                  <img className="rounded-circle" src="/MTUP.png" alt="MTUP" width="20.75em" height="20.75em" style={pictureStyle} />
-                </span> UPSKILL
-              </a>
-            </div>
-            <div className="col-md-4"></div>
-          </div>
-        </div>
-      </header>
+    <div>      
+      <Header userFirstName={userFirstName} userLastName={userLastName} userRoles={userRoles} />      
       <div className="container">
+        {userFirstName === null ? null:
         <nav className="navbar navbar-expand ">
           <div className="navbar-nav mr-auto">
             <li className="nav-item">
@@ -119,18 +112,53 @@ function App() {
               </Link>
             </li>
           </div>
-        </nav>
+        </nav>}
       </div>
       <div className="App">
         <Routes>
-          <Route path="/userskills/:id" element={<UserSkillTable history={history} userInfo={userInfo} />} />
-          <Route path="/login" element={<Login setUserInfo={setUserInfo} />} />
-          <Route path="/welcometeamleader" element={<WelcomeTeamLeader userInfo={userInfo} history={history} />} />
-          <Route path="/welcometeammember" element={<WelcomeTeamMember userInfo={userInfo} history={history} />} />
-          <Route path="/skillstovalidate" element={<SkillsToValidate userInfo={userInfo} />} />
+          <Route path="/userskills/:id" element={<UserSkillTable
+            userRoles={userRoles} history={history} manager={manager} setManager={setManager}/>} />
+          <Route path="/login" element={<Login
+            setUserFirstName={setUserFirstName}
+            setUserLastName={setUserLastName}
+            setUserId={setUserId}
+            setUserRoles={setUserRoles}
+            userFirstName={userFirstName}
+            userLastName={userLastName}
+            userId={userId}
+            userRoles={userRoles}
+          />
+          } />
+          <Route path="/welcometeamleader" element={<WelcomeTeamLeader
+            userFirstName={userFirstName}
+            userLastName={userLastName}
+            userId={userId}
+            team={team}
+            setTeam={setTeam}
+            history={history} />} />
+          <Route path="/welcometeammember" element={<WelcomeTeamMember
+            userFirstName={userFirstName}
+            userLastName={userLastName}
+            userId={userId}
+            manager={manager}
+            setManager={setManager}
+            history={history} />} />
+          <Route path="/skillstovalidate/:id" element={<SkillsToValidate
+            userFirstName={userFirstName}
+            userLastName={userLastName} 
+            team={team} />} 
+            />
           <Route path="/error" element={<Error />} />
-          <Route path="*" element={<Login setUserInfo={setUserInfo} userInfo={userInfo} />} />
-
+          <Route path="*" element={<Login
+            setUserFirstName={setUserFirstName}
+            setUserLastName={setUserLastName}
+            setUserId={setUserId}
+            setUserRoles={setUserRoles}
+            userFirstName={userFirstName}
+            userLastName={userLastName}
+            userId={userId}
+            userRoles={userRoles}
+          />} />
         </Routes>
       </div>
     </div>

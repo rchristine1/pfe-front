@@ -1,7 +1,6 @@
 import './App.css';
 import React, { useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { BsFilePerson } from 'react-icons/bs';
 
 
 let cardTitleStyle = { color: '#609f9f' }

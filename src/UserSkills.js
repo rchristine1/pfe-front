@@ -2,45 +2,44 @@ import React, { Component } from 'react'
 //import SimpleModal from './SimpleModal';
 import axios from 'axios';
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { AUTH_TOKEN_KEY } from './App'
 import './UserSkills.css';
 import UserSkillRow from './UserSkill';
 import UserSkillDomainRow from './UserSkillDomainRow';
 import { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
+import { ROLE_TEAMMEMBER } from './Login'
+import { ROLE_TEAMLEADER } from './Login'
 
 function UserSkillTable(props) {
   let [userSkills, setUserSkills] = useState([])
   let [userStatusCampaign, setUserStatusCampaign] = useState('')
+  let [teamMemberFirstName, setTeamMemberFirstName] = useState('')
+  let [teamMemberLastName, setTeamMemberLastName] = useState('')
   let userIdParam = useParams();
+  let userRole = props.userRoles
   let history = props.history
-  //let firstname = props.userInfo.firstname;
-  //let lastname = props.userInfo.lastname.toUpperCase();
-  let firstname = JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY)).firstname;
-  let lastname = JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY)).lastname.toUpperCase();
-  let token = (JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY))).access
-  //console.log("UserInfo",props.userInfo)
+  let manager = props.manager
+  let setManager = props.setManager
 
-  let titleH1Style = { color: '#131f1f' }
+  let titleH1Style = { color: '#131f1f', letterSpacing: '5px',fontSize:'1.75em' }
   let tableStyle = { borderSpacing: '0px 5px', borderCollapse: 'separate' }
-  let columnStyle = { color: '#4c7f7f' }
-  let campaignStyle = { color: '#609f9f' }
+  let columnStyle = { color: '#4c7f7f' } 
+  let campaignStyle = {color: '#ffff', backgroundColor: '#609f9f'}
   let cardTitleStyle = { color: '#609f9f' }
   let cardSubTitleStyle = { color: '#bfd8d8' }
   let rowTitleStyle = { backgroundColor: '#eff5f5' }
- 
+
 
   useEffect(() => {
 
     axios('/teammembers/' + Object.values(userIdParam), {
       method: 'GET',
-      headers: {
-        'Content-type': 'application/json',
-        "Authorization": "Bearer " + token
-      }
     })
       .then((response) => {
         setUserStatusCampaign(response.data.statusCurrentCampaign)
+        setTeamMemberFirstName(response.data.firstname)
+        setTeamMemberLastName(response.data.lastname)
+        setManager(response.data.manager)
       }, (error) => {
         if (error.response.status === 403 || error.response.status === 401) {
           history("/login")
@@ -54,10 +53,6 @@ function UserSkillTable(props) {
   useEffect(() => {
     axios("/userskills/" + Object.values(userIdParam), {
       method: 'GET',
-      headers: {
-        'Content-type': 'application/json',
-        "Authorization": "Bearer " + token
-      }
     })
       .then((response) => {
         setUserSkills(response.data)
@@ -69,10 +64,12 @@ function UserSkillTable(props) {
       )
   }, [])
 
+
   const rows = [];
   let lastDomain = null;
   const [expandedRows, setExpandedRows] = useState([]);
   const [expandState, setExpandState] = useState({});
+  let [actionState, setActionState] = useState(userRole);
 
   userSkills.forEach((userSkill) => {
     if (userSkill.labelDomain !== lastDomain) {
@@ -92,7 +89,9 @@ function UserSkillTable(props) {
       <UserSkillRow
         userSkill={userSkill}
         expandedRows={expandedRows}
-        key={userSkill.userSkillId} />
+        key={userSkill.userSkillId}
+        actionState={actionState}
+      />
     );
     lastDomain = userSkill.labelDomain;
   });
@@ -102,9 +101,6 @@ function UserSkillTable(props) {
 
     axios('/teammembers/' + Object.values(userIdParam) + "/statusCurrentCampaign", {
       method: 'patch',
-      headers: {
-        "Authorization": "Bearer " + token
-      },
       data: { statusUserCampaign: "SUBMITTED" }
     }
     )
@@ -124,13 +120,16 @@ function UserSkillTable(props) {
       <div className="container pt-4" style={rowTitleStyle}>
         <div className="row align-items-center justify-content-start pb-4" >
           <div className='col-6'>
-            <h1 style={titleH1Style}>MY SKILLS</h1>
+            {actionState === ROLE_TEAMMEMBER ?
+              <h1 style={titleH1Style}>MY SKILLS</h1> :
+              <h1 style={titleH1Style}>SKILLS</h1>
+            }
           </div>
           <div className="col-4 offset-md-2">
             <div className="card" >
               <div className="card-body py-0">
-                <h5 className="card-title text-end" style={cardTitleStyle}>{firstname} {lastname}</h5>
-                <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>Card subtitle</h6>
+                <h5 className="card-title text-end" style={cardTitleStyle}>{teamMemberFirstName} {teamMemberLastName}</h5>
+                <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>{manager}</h6>
                 <p className="card-text"></p>
               </div>
             </div>
@@ -153,14 +152,24 @@ function UserSkillTable(props) {
       </div>
       <div className="row">
         <div className="col-md-12">
-          <form className="col-md-2 Hover" onSubmit={onSubmit}>
-            {userStatusCampaign === "SUBMITTED" ? <input id="{inputStatusCampaign}"
-              className="btn btn-secondary btn-sm btn-block w-100"
-              type="submit" value="Submitted" disabled /> :
-              <input id="{inputStatusCampaign}"
-                className="btn btn-dark btn-sm btn-block w-100"
-                type="submit" value="Submit the campaign" style={campaignStyle} />
+          <form className="col-md-2 " onSubmit={onSubmit}>
+            {actionState === ROLE_TEAMLEADER ?
+              userStatusCampaign !== "VALIDATED" ?
+                (<input id="{inputStatusCampaign}"
+                  className="btn btn-sm btn-block w-100 fw-bold Hover"
+                  type="submit" value="Validate the campaign" style={campaignStyle} />) :
+                (<input id="{inputStatusCampaign}"
+                  className="btn btn-secondary btn-sm btn-block w-100 border border-3 fw-bold"
+                  type="submit" value="Validated" disabled />) :
+              userStatusCampaign === "SUBMITTED" ?
+                (<input id="{inputStatusCampaign}"
+                  className="btn btn-secondary btn-sm btn-block w-100  border border-3 fw-bold"
+                  type="submit" value="Submitted" disabled />) :
+                (<input id="{inputStatusCampaign}"
+                  className="btn btn-sm btn-block w-100 fw-bold Hover"
+                  type="submit" value="Submit the campaign" style={campaignStyle} />)
             }
+
           </form>
         </div>
       </div>
