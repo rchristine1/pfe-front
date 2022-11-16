@@ -7,7 +7,10 @@ import UserSkillTable from './UserSkills';
 import WelcomeTeamLeader from './WelcomeTeamLeader';
 import WelcomeTeamMember from './WelcomeTeamMember';
 import SkillsToValidate from './SkillsToValidate';
+import SkillsCampaignToCreate from './SkillsCampaignToCreate';
 import Header from './Header';
+import Logout from './Logout';
+import Navbar from './Navbar';
 import { Error } from './Error';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
@@ -24,6 +27,9 @@ function App() {
   let [userRoles, setUserRoles] = useState(null);
   let [manager, setManager] = useState(null);
   let [team, setTeam] = useState(null);
+  let [userStatusCampaign, setUserStatusCampaign] = useState(null)
+  let [currentCampaign, setCurrentCampaign] = useState('')
+  let [statusVolunteer, setStatusVolunteer] = useState('')
   let [loading, setLoading] = useState(false)
   let history = useNavigate();
   let location = useLocation();
@@ -95,29 +101,22 @@ function App() {
 
 
   return (
-    <div>      
-      <Header userFirstName={userFirstName} userLastName={userLastName} userRoles={userRoles} />      
+    <div>
+      <Header userFirstName={userFirstName} userLastName={userLastName} userRoles={userRoles} />
       <div className="container">
-        {userFirstName === null ? null:
-        <nav className="navbar navbar-expand ">
-          <div className="navbar-nav mr-auto">
-            <li className="nav-item">
-              <Link to={"/userskills/:id"} className="nav-link">
-                Skills
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link to={"/add"} className="nav-link">
-                Add
-              </Link>
-            </li>
-          </div>
-        </nav>}
+        {userFirstName === null ? null :
+          <Navbar userRoles={userRoles} userId={userId} history={history} />}
       </div>
       <div className="App">
         <Routes>
           <Route path="/userskills/:id" element={<UserSkillTable
-            userRoles={userRoles} history={history} manager={manager} setManager={setManager}/>} />
+            userRoles={userRoles}
+            history={history}
+            manager={manager}
+            setManager={setManager}
+            userStatusCampaign={userStatusCampaign}
+            setUserStatusCampaign={setUserStatusCampaign}
+          />} />
           <Route path="/login" element={<Login
             setUserFirstName={setUserFirstName}
             setUserLastName={setUserLastName}
@@ -142,13 +141,31 @@ function App() {
             userId={userId}
             manager={manager}
             setManager={setManager}
+            currentCampaign={currentCampaign}
+            setCurrentCampaign={setCurrentCampaign}
+            userStatusCampaign={userStatusCampaign}
+            setUserStatusCampaign={setUserStatusCampaign}
+            statusVolunteer={statusVolunteer}
+            setStatusVolunteer={setStatusVolunteer}
             history={history} />} />
           <Route path="/skillstovalidate/:id" element={<SkillsToValidate
             userFirstName={userFirstName}
-            userLastName={userLastName} 
-            team={team} />} 
-            />
+            userLastName={userLastName}
+            team={team}            
+          />}
+          />
+          <Route path="/userskills/campaign/:campaignId" element={<SkillsCampaignToCreate
+            userFirstName={userFirstName}
+            userLastName={userLastName}
+            manager={manager}
+            currentCampaign={currentCampaign}
+            userStatusCampaign={userStatusCampaign}
+            setUserStatusCampaign={setUserStatusCampaign}
+            userId={userId}
+            history={history}
+          />} />
           <Route path="/error" element={<Error />} />
+          <Route path="/logout" element={<Logout history={history} />} />
           <Route path="*" element={<Login
             setUserFirstName={setUserFirstName}
             setUserLastName={setUserLastName}

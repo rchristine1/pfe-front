@@ -9,23 +9,25 @@ import { useState, useEffect } from 'react';
 import TeamMemberSkills from './TeamMemberSkills';
 
 function SkillsToValidate(props) {
-    let [teamMembersToValidate, setTeamMembersToValidate] = useState([])
-    let history = props.history    
+    let [teamMembersSubmitted, setTeamMembersSubmitted] = useState([])
+    let [teamMembersInProgress, setTeamMembersInProgress] = useState([])
+    let history = props.history
     let firstname = props.userFirstName
     let lastname = props.userLastName
     let team = props.team
     let userIdParam = useParams();
 
-    let titleH1Style = { color: '#131f1f',letterSpacing:'5px',fontSize:'1.75em' }
+    let titleH1Style = { color: '#131f1f', letterSpacing: '5px', fontSize: '1.75em' }
     let cardTitleStyle = { color: '#609f9f' }
     let cardSubTitleStyle = { color: '#bfd8d8' }
     let rowTitleStyle = { backgroundColor: '#eff5f5' }
     let activitiesStyle = { marginTop: '30px' }
-    
-  
+    let cardTitle = { backgroundColor: '#eff5f5' }
+
+
 
     useEffect(() => {
-        axios('/teammembers/statuscampaign/' + Object.values(userIdParam), {
+        axios('/teammembers/manager/' + Object.values(userIdParam), {
             method: 'GET',
             params: {
                 status: 'SUBMITTED'
@@ -33,7 +35,25 @@ function SkillsToValidate(props) {
 
         })
             .then((response) => {
-                setTeamMembersToValidate(response.data)
+                setTeamMembersSubmitted(response.data)
+            }, (error) => {
+                if (error.response.status === 403 || error.response.status === 401) {
+                    history("/login")
+                }
+            }
+            )
+    }, [])
+
+    useEffect(() => {
+        axios('/teammembers/manager/' + Object.values(userIdParam), {
+            method: 'GET',
+            params: {
+                status: "IN_PROGRESS"
+            },
+
+        })
+            .then((response) => {
+                setTeamMembersInProgress(response.data)
             }, (error) => {
                 if (error.response.status === 403 || error.response.status === 401) {
                     history("/login")
@@ -62,18 +82,68 @@ function SkillsToValidate(props) {
             </div>
             <div className="col-md-12" style={activitiesStyle}>
                 <div className="container">
-                    <div className="row">
-                        {teamMembersToValidate.map((teamMemberToValidate) =>
-                            <div id={teamMemberToValidate.id} className="col-md-2" key={teamMemberToValidate.id}>
-                                <TeamMemberSkills {...teamMemberToValidate}  />
+                    <div className="row py-3">
+                        <div className='col-1'></div>
+                        <div className="col-9 justify-content-center ">
+                            <div className="card py-3" style={cardTitle}>
+                                <div className="card-body py-0">
+                                    <h5 className="card-title text-center" style={cardTitleStyle}>Status Campaign</h5>
+                                    <h6 className="card-subtitle mb-2 text-center fw-bold" style={cardTitleStyle}>Submitted</h6>
+                                    <p className="card-text"></p>
+                                </div>
                             </div>
-                        )}
+                        </div>
+                        <div className='col-1'></div>
+                    </div>
+                    <div className="container">
+                        <div className="row">
+                            <div className='col-1'></div>
+                            <div className="col-md-9 ">
+                                <div className="row justify-content-center">
+                                    {teamMembersSubmitted.map((teamMemberSubmitted) =>
+                                        <div id={teamMemberSubmitted.id} className="col-md-3 " key={teamMemberSubmitted.id}>
+                                            <TeamMemberSkills {...teamMemberSubmitted} />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className='col-1'></div>
+                        </div>
                     </div>
                 </div>
-
             </div>
-            <div className="row">
 
+            <div className="col-md-12" style={activitiesStyle}>
+                <div className="container">
+                    <div className="row py-3">
+                        <div className='col-1'></div>
+                        <div className="col-9 justify-content-center">
+                            <div className="card py-3" style={cardTitle}>
+                                <div className="card-body py-0">
+                                    <h5 className="card-title text-center" style={cardTitleStyle}>Status Campaign</h5>
+                                    <h6 className="card-subtitle mb-2 text-center fw-bold" style={cardTitleStyle}>In Progress</h6>
+                                    <p className="card-text"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='col-1'></div>
+                    </div>
+                    <div className="container">
+                        <div className="row">
+                            <div className='col-1'></div>
+                            <div className="col-md-9 ">
+                                <div className="row justify-content-center">
+                                    {teamMembersInProgress.map((teamMemberInProgress) =>
+                                        <div id={teamMemberInProgress.id} className="col-md-3" key={teamMemberInProgress.id}>
+                                            <TeamMemberSkills {...teamMemberInProgress} />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className='col-1'></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

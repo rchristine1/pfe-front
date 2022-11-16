@@ -4,15 +4,16 @@ import axios from 'axios';
 import { AUTH_TOKEN_KEY } from './App'
 import { ROLE_TEAMMEMBER } from './Login'
 import { ROLE_TEAMLEADER } from './Login'
+import { BsCheckCircleFill } from 'react-icons/bs';
 
 
 function UserSkillRow(props) {
   let [userSkill, setUserSkill] = useState(props.userSkill)
   let actionState = props.actionState
-  console.log("actionState",actionState)
-  console.log("ROLE_TEAMLEADER",ROLE_TEAMLEADER)
 
   let expandedRows = props.expandedRows
+  let userStatusCampaign = props.userStatusCampaign
+  console.log("USERSKILL", userStatusCampaign)
 
   let inputMarkId = "userSkillMark" + userSkill.userSkillId
   let markValue = userSkill.mark
@@ -26,22 +27,18 @@ function UserSkillRow(props) {
   let rowStyles = { fontSize: "0.75em", color: '#131f1f' };
   let buttonFilledStyle = { backgroundColor: "#eff5f5", fontSize: '1.2em', color: '#131f1f' }
   let actionStyle = { fontSize: "1em" }
+  let rowFinishedStyle = { color: '#609f9f' }
+  let buttonFilledToValidateStyle = { backgroundColor: "#fff" }
 
-
-  console.log("inputMarkId", inputMarkId)
-  console.log("selectedStatusId", selectedStatusId)
 
   function handleChangeStatus(event, userSkillId) {
     event.preventDefault();
 
     valueUserSkillStatus = document.getElementById(selectedStatusId).value
     console.log("selectedStatusId", valueUserSkillStatus)
-    let token = (JSON.parse(sessionStorage.getItem(AUTH_TOKEN_KEY))).access
+
     axios('/userskills/' + userSkillId + "/statusSkill", {
       method: 'patch',
-      headers: {
-        "Authorization": "Bearer " + token
-      },
       data: { statusSkill: valueUserSkillStatus }
     }
     )
@@ -88,34 +85,103 @@ function UserSkillRow(props) {
             onChange={event => handleChange(event, userSkill.userSkillId)}
           >
             <label className="" htmlFor='userskillmark'></label>
-            {markValue !== -1 || ((markValue >= 0) && (markValue <= 2))
-              ? (
-                <input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledStyle}
+            {(actionState === ROLE_TEAMMEMBER) 
+              ?
+              (userStatusCampaign === 'INITIALIZED')
+                ?
+                (markValue !== -1 || ((markValue >= 0) && (markValue <= 2))
+                  ? (
+                    <input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledStyle}
+                      type="number" defaultValue={userSkill.mark} name="userskillmark"
+                      min="0" max="2"
+                    />
+                  ) : (
+                    <input id={inputMarkId} className="form-control form-control-sm border-danger "
+                      type="number" defaultValue=" " name="userskillmark" style={rowStyles}
+                      min="0" max="2"
+                    />
+                  )
+                )
+                :
+                (<input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledStyle}
                   type="number" defaultValue={userSkill.mark} name="userskillmark"
-                  min="0" max="2"
-                />
-              ) : (
-                <input id={inputMarkId} className="form-control form-control-sm border-danger "
-                  type="number" defaultValue=" " name="userskillmark" style={rowStyles}
-                  min="0" max="2"
-                />
-              )}
-          </form></td>
-        <td className="col-1 text-center" style={rowStyles}>{userSkill.statusSkill}
+                  min="0" max="2" disabled />
+                )
+              :
+              (userStatusCampaign === 'VALIDATED')
+                ? 
+                (<input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledStyle}
+                  type="number" defaultValue={userSkill.mark} name="userskillmark"
+                  min="0" max="2" disabled />
+                )
+                :
+                (userSkill.statusSkill === "MARKED"
+                  ?
+                   (
+                      <input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledToValidateStyle}
+                        type="number" defaultValue={userSkill.mark} name="userskillmark"
+                        min="0" max="2"
+                      />
+                    ) 
+                  : (
+                      <input id={inputMarkId} className="form-control form-control-sm  "
+                        type="number" defaultValue={userSkill.mark} name="userskillmark" style={buttonFilledStyle}
+                        min="0" max="2"
+                      />
+                    )
+                  )
+            }
+          </form>
         </td>
+        {(actionState === ROLE_TEAMLEADER)
+          ?
+          (userSkill.statusSkill !== "MARKED"
+            ?
+            <td className="col-1 text-center fw-bold" style={rowFinishedStyle}>
+              {userSkill.statusSkill}<span>
+                <BsCheckCircleFill className='ms-2 mb-2 pt-1' />
+              </span>
+            </td>
+            :
+            <td className="col-1 text-center fw-bold text-danger" style={rowStyles}>
+              {userSkill.statusSkill}
+            </td>
+          )
+          :
+          (userSkill.statusSkill === "MARKED" || userStatusCampaign === "VALIDATED" || userStatusCampaign === "IN_PROGRESS")
+            ?
+            <td className="col-1 fw-bold text-center" style={rowFinishedStyle}>
+              {userSkill.statusSkill}<span>
+                <BsCheckCircleFill className='ms-2 mb-2 pt-1' />
+              </span>
+            </td>
+            :
+            <td className="col-1 text-center fw-bold" style={rowStyles}>
+              {userSkill.statusSkill}
+            </td>
+        }
         <td className="col-1" style={rowStyles}>
-          {actionState === ROLE_TEAMLEADER ?
-            <form className="row "
-              onChange={event => handleChangeStatus(event, userSkill.userSkillId)}
-            >
-              <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}>
-                <option selected>{userSkill.statusSkill}</option>
-                <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
-                <option value={USERSKILL_STATUS_VALIDATED}>{USERSKILL_STATUS_VALIDATED}</option>
-              </select>
-              <label className="" htmlFor='updatedStatus'></label>
-
-            </form> : null}
+          {(actionState === ROLE_TEAMLEADER)
+            ?
+            ((userStatusCampaign === 'SUBMITTED') || (userStatusCampaign === 'IN_PROGRESS')
+              ?
+              (<form className="row "
+                onChange={event => handleChangeStatus(event, userSkill.userSkillId)}
+              >
+                <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}>
+                  <option selected>Select the action</option>
+                  <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
+                  <option value={USERSKILL_STATUS_VALIDATED}>{USERSKILL_STATUS_VALIDATED}</option>
+                </select>
+                <label className="" htmlFor='updatedStatus'></label>
+              </form>
+              )
+              :
+              null
+            )
+            :
+            null
+          }
         </td>
         <td className="col-1" style={rowStyles}></td>
       </tr> : null

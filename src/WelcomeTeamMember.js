@@ -2,14 +2,11 @@
 import React, { Component } from 'react'
 //import SimpleModal from './SimpleModal';
 import axios from 'axios';
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { AUTH_TOKEN_KEY } from './App'
+import { Link } from "react-router-dom";
+
 import './UserSkills.css';
-import UserSkillRow from './UserSkill';
-import UserSkillDomainRow from './UserSkillDomainRow';
+
 import { useState, useEffect } from 'react';
-import Table from 'react-bootstrap/Table';
-import Header from './Header';
 
 function WelcomeTeamMember(props) {
   let history = props.history
@@ -18,7 +15,12 @@ function WelcomeTeamMember(props) {
   let id = props.userId
   let manager = props.manager
   let setManager = props.setManager
-
+  let currentCampaign = props.currentCampaign
+  let setCurrentCampaign = props.setCurrentCampaign
+  let userStatusCampaign = props.userStatusCampaign
+  let setUserStatusCampaign = props.setUserStatusCampaign
+  let setStatusVolunteer = props.setStatusVolunteer
+  let statusVolunteer = props.statusVolunteer
 
   let titleH1Style = { color: '#131f1f', letterSpacing: '5px', fontSize: '1.75em' }
   let cardTitleStyle = { color: '#609f9f' }
@@ -28,12 +30,13 @@ function WelcomeTeamMember(props) {
   let activitiesButtonStyle = { color: '#ffff', backgroundColor: '#609f9f' }
 
   useEffect(() => {
-
     axios('/teammembers/' + id, {
       method: 'GET',
     })
       .then((response) => {
         setManager(response.data.manager)
+        setUserStatusCampaign(response.data.statusCurrentCampaign)
+        setStatusVolunteer(response.data.statusVolunteerTrainer)
       }, (error) => {
         if (error.response.status === 403 || error.response.status === 401) {
           history("/login")
@@ -42,9 +45,27 @@ function WelcomeTeamMember(props) {
       )
   }, [])
 
+  useEffect(() => {
+    axios('/campaign/status', {
+      method: 'GET',
+      params: {
+        status: 'CURRENT'
+      },
+    })
+      .then((response) => {
+        setCurrentCampaign(response.data)
+        console.log("CAMPAIGN")
+      }, (error) => {
+        if (error.response.status === 403 || error.response.status === 401) {
+          history("/login")
+        }
+      }
+      )
+  }, [])
 
+  console.log("WELCOME", userStatusCampaign)
+  console.log("WELCOME", statusVolunteer)
   return (
-
     <div className="container py-5 h-100">
       <div className="container pt-4" style={rowTitleStyle}>
         <div className="row align-items-center justify-content-start pb-4" >
@@ -62,49 +83,88 @@ function WelcomeTeamMember(props) {
           </div>
         </div>
       </div>
+      <div className="col-md-8 offset-md-2" style={activitiesStyle}>
+        <div className="container">
+          <div className="row pb-3 ">
+            {(userStatusCampaign === 'OPENED') || (userStatusCampaign === null) ?
+              (<div className="col-md-5 pb-3">
+                <div className="card shadow ">
+                  <div className="card-body">
+                    <h5 className="card-title">Initialize My Skills</h5>
+                    <p className="card-text"></p>
+                    <Link className="btn btn-sm Hover" to={`/userskills/campaign/${currentCampaign.id}`} onClick={event => {
+                      history(`/userskills/campaign/${currentCampaign.id}`);
+                    }} style={activitiesButtonStyle}>Go</Link>
+                  </div>
+                </div>
+              </div>) :
+              null
+            }
+            {((userStatusCampaign !== null) || (userStatusCampaign !== 'OPENED')
+              ?
+              (<div className="col-md-5 pb-3">
+                <div className="card shadow">
+                  <div className="card-body">
+                    <h5 className="card-title">Evaluate My Skills</h5>
+                    <p className="card-text"></p>
+                    <Link className="btn btn-sm Hover" to={`/userskills/${id}`} onClick={event => {
+                      history(`/userskills/${id}`);
+                    }} style={activitiesButtonStyle}>Go</Link>
+                  </div>
+                </div>
+              </div>)
+              :
+              (<div className="col-md-5 pb-3">
+                <div className="card shadow">
+                  <div className="card-body">
+                    <h5 className="card-title">Skills are not initialized yet</h5>
+                    <p className="card-text"></p>
+                  </div>
+                </div>
+              </div>
+              )
+            )
+            }
 
-      <div className="col-md-12" style={activitiesStyle}>
-        <div className="row pb-3">
-          <div className="col-md-3 pb-3">
-            <div className="card shadow">
-              <div className="card-body">
-                <h5 className="card-title">Evaluate My Skills</h5>
-                <p className="card-text"></p>
-                <Link className="btn btn-sm Hover" to={`/userskills/${id}`} onClick={event => {
-                  history(`/userskills/${id}`);
-                }} style={activitiesButtonStyle}>Go</Link>
+            {(statusVolunteer === 'UNKNOWN') || (statusVolunteer === null) ?
+              (<div className="col-md-5 pb-3">
+                <div className="card shadow">
+                  <div className="card-body">
+                    <h5 className="card-title">Volunteer to train ?</h5>
+                    <p className="card-text"></p>
+                    <a href="#" className="btn btn-sm Hover" disabled style={activitiesButtonStyle}>Go</a>
+                  </div>
+                </div>
+              </div>) :
+              null
+            }
+            {(userStatusCampaign === 'IN_PROGRESS') ?
+              (<div className="col-md-5 pb-3">
+                <div className="card shadow">
+                  <div className="card-body">
+                    <h5 className="card-title">My Trainings</h5>
+                    <p className="card-text"></p>
+                    <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
+                  </div>
+                </div>
+              </div>) :
+              null
+            }
+            {(statusVolunteer === 'VOLUNTEER') ?
+            (<div className="col-md-5 pb-3">
+              <div className="card shadow">
+                <div className="card-body">
+                  <h5 className="card-title">Manage My Trainings</h5>
+                  <p className="card-text"></p>
+                  <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
+                </div>
               </div>
-            </div>
+            </div>) :
+            (null)
+            }
           </div>
-          <div className="col-md-3 pb-3">
-            <div className="card shadow">
-              <div className="card-body">
-                <h5 className="card-title">Volunteer to train ?</h5>
-                <p className="card-text"></p>
-                <a href="#" className="btn btn-sm Hover" disabled style={activitiesButtonStyle}>Go</a>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3 pb-3">
-            <div className="card shadow">
-              <div className="card-body">
-                <h5 className="card-title">My Trainings</h5>
-                <p className="card-text"></p>
-                <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3 pb-3">
-            <div className="card shadow">
-              <div className="card-body">
-                <h5 className="card-title">Follow My Trainings</h5>
-                <p className="card-text"></p>
-                <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </div >
+      </div >
     </div>
   );
 
