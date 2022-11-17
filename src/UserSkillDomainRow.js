@@ -11,7 +11,6 @@ class UserSkillDomainRow extends React.Component {
 
     render() {
         const domain = this.props.domain;
-        console.log("Domain:", domain)
         const handleEpandRow = (event, domain) => {
             const currentExpandedRows = this.props.expandedRows;
             const isRowExpanded = currentExpandedRows.includes(domain);

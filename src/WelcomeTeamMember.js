@@ -100,7 +100,7 @@ function WelcomeTeamMember(props) {
               </div>) :
               null
             }
-            {((userStatusCampaign !== null) || (userStatusCampaign !== 'OPENED')
+            {(userStatusCampaign === "INITIALIZED") 
               ?
               (<div className="col-md-5 pb-3">
                 <div className="card shadow">
@@ -114,18 +114,24 @@ function WelcomeTeamMember(props) {
                 </div>
               </div>)
               :
+              null
+            }
+            {(userStatusCampaign === 'VALIDATED') || (userStatusCampaign === 'SUBMITTED') || (userStatusCampaign === 'IN_PROGRESS')
+              ?
               (<div className="col-md-5 pb-3">
                 <div className="card shadow">
                   <div className="card-body">
-                    <h5 className="card-title">Skills are not initialized yet</h5>
+                    <h5 className="card-title">Display My Skills</h5>
                     <p className="card-text"></p>
+                    <Link className="btn btn-sm Hover" to={`/userskills/${id}`} onClick={event => {
+                      history(`/userskills/${id}`);
+                    }} style={activitiesButtonStyle}>Go</Link>
                   </div>
                 </div>
-              </div>
-              )
-            )
+              </div>)
+              :
+              null
             }
-
             {(statusVolunteer === 'UNKNOWN') || (statusVolunteer === null) ?
               (<div className="col-md-5 pb-3">
                 <div className="card shadow">
@@ -151,16 +157,16 @@ function WelcomeTeamMember(props) {
               null
             }
             {(statusVolunteer === 'VOLUNTEER') ?
-            (<div className="col-md-5 pb-3">
-              <div className="card shadow">
-                <div className="card-body">
-                  <h5 className="card-title">Manage My Trainings</h5>
-                  <p className="card-text"></p>
-                  <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
+              (<div className="col-md-5 pb-3">
+                <div className="card shadow">
+                  <div className="card-body">
+                    <h5 className="card-title">Manage My Trainings</h5>
+                    <p className="card-text"></p>
+                    <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
+                  </div>
                 </div>
-              </div>
-            </div>) :
-            (null)
+              </div>) :
+              (null)
             }
           </div>
         </div >

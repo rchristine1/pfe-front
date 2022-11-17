@@ -9,11 +9,13 @@ import { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 import { ROLE_TEAMMEMBER } from './Login'
 import { ROLE_TEAMLEADER } from './Login'
+import {BsFillInfoCircleFill} from 'react-icons/bs';
 
 function UserSkillTable(props) {
   let [userSkills, setUserSkills] = useState([])
   let userStatusCampaign = props.userStatusCampaign
-  let setUserStatusCampaign = props.setUserStatusCampaign  
+  let setUserStatusCampaign = props.setUserStatusCampaign
+  let currentCampaign = props.currentCampaign
   let [teamMemberFirstName, setTeamMemberFirstName] = useState('')
   let [teamMemberLastName, setTeamMemberLastName] = useState('')
   let userIdParam = useParams();
@@ -51,6 +53,7 @@ function UserSkillTable(props) {
   useEffect(() => {
     axios("/userskills/" + Object.values(userIdParam), {
       method: 'GET',
+      params: { id: currentCampaign.id }
     })
       .then((response) => {
         setUserSkills(response.data)
@@ -71,8 +74,6 @@ function UserSkillTable(props) {
 
   userSkills.forEach((userSkill) => {
     if (userSkill.labelDomain !== lastDomain) {
-      console.log("userSkill.labelDomain", userSkill.labelDomain);
-      console.log('lastDomain', lastDomain)
       rows.push(
         <UserSkillDomainRow
           domain={userSkill.labelDomain}
@@ -95,7 +96,7 @@ function UserSkillTable(props) {
     lastDomain = userSkill.labelDomain;
   });
 
-  function onSubmit(event,statusCampaign) {
+  function onSubmit(event, statusCampaign) {
     event.preventDefault();
 
     axios('/teammembers/' + Object.values(userIdParam) + "/statusCurrentCampaign", {
@@ -127,7 +128,7 @@ function UserSkillTable(props) {
           <div className="col-3">
             <div className="card" >
               <div className="card-body py-0">
-                <h5 className="card-title text-end" style={cardTitleStyle}>Campaign</h5>
+                <h5 className="card-title text-end" style={cardTitleStyle}>Campaign {currentCampaign.label}</h5>
                 <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>{userStatusCampaign}</h6>
                 <p className="card-text"></p>
               </div>
@@ -158,7 +159,7 @@ function UserSkillTable(props) {
             </thead>
             <tbody >{rows}</tbody>
           </Table> :
-          <p>Skills are not yet Initialized
+          <p>
             <Link className="btn btn-sm Hover " to={`/userskills/${userIdParam}`} onClick={event => {
               history(`/userskills/${userIdParam}`);
             }} >Initialize your skills</Link>
@@ -168,17 +169,17 @@ function UserSkillTable(props) {
       <div className="row">
         <div className="col-md-8 offset-md-2">
           <div className="row">
-            { actionState === ROLE_TEAMLEADER 
+            {actionState === ROLE_TEAMLEADER
               ?
               (userStatusCampaign !== "VALIDATED"
                 ?
-                (<form className="col-md-3" onSubmit={(event,status) => onSubmit(event,"VALIDATED")}>
+                (<form className="col-md-3" onSubmit={(event, status) => onSubmit(event, "VALIDATED")}>
                   <input id="{inputStatusCampaign}"
                     className="btn btn-sm btn-block w-100 fw-bold Hover"
                     type="submit" value="Validate the campaign" style={campaignStyle} />
-                </form>) 
+                </form>)
                 :
-                (<form className="col-md-3" onSubmit={(event,status) => onSubmit(event,"VALIDATED")}>
+                (<form className="col-md-3" onSubmit={(event, status) => onSubmit(event, "VALIDATED")}>
                   <input id="{inputStatusCampaign}"
                     className="btn btn-secondary btn-sm btn-block w-100 border border-3 fw-bold"
                     type="submit" value="Validated" disabled />
@@ -189,38 +190,38 @@ function UserSkillTable(props) {
               ((userStatusCampaign === "SUBMITTED") || (userStatusCampaign === "VALIDATED") || (userStatusCampaign === "IN_PROGRESS")
                 ?
                 (
-                  <form className="col-md-3" onSubmit={(event,status) => onSubmit(event,"SUBMITTED")}>
+                  <form className="col-md-3" onSubmit={(event, status) => onSubmit(event, "SUBMITTED")}>
                     <input id="{inputStatusCampaign}"
-                    className="btn btn-secondary btn-sm btn-block w-100  border border-3 fw-bold"
-                    type="submit" value="Submitted" disabled />
+                      className="btn btn-secondary btn-sm btn-block w-100  border border-3 fw-bold"
+                      type="submit" value="Submitted" disabled />
                   </form>
-                ) 
+                )
                 :
                 (
-                  <form className="col-md-3" onSubmit={(event,status) => onSubmit(event,"SUBMITTED")}>
+                  <form className="col-md-3" onSubmit={(event, status) => onSubmit(event, "SUBMITTED")}>
                     <input id="{inputStatusCampaign}"
-                    className="btn btn-sm btn-block w-100 fw-bold Hover"
-                    type="submit" value="Submit the campaign" style={campaignStyle} />
+                      className="btn btn-sm btn-block w-100 fw-bold Hover"
+                      type="submit" value="Submit the campaign" style={campaignStyle} />
                   </form>
                 )
               )
             }
-            <form className="col-md-3" onSubmit={(event,status) => onSubmit(event,"IN_PROGRESS")}>
-              {actionState === ROLE_TEAMLEADER 
-              ?(  (userStatusCampaign === "IN_PROGRESS" || userStatusCampaign === "VALIDATED" )
-                  ? 
+            <form className="col-md-3" onSubmit={(event, status) => onSubmit(event, "IN_PROGRESS")}>
+              {actionState === ROLE_TEAMLEADER
+                ? ((userStatusCampaign === "IN_PROGRESS" || userStatusCampaign === "VALIDATED")
+                  ?
                   (<input id="{inputStatusCampaign}"
-                  className="btn btn-sm btn-block w-100 fw-bold bg-secondary" disabled
-                  type="submit" value="Provide Training" style={campaignStyle} />
-                  ) 
+                    className="btn btn-sm btn-block w-100 fw-bold bg-secondary" disabled
+                    type="submit" value="Provide Training" style={campaignStyle} />
+                  )
                   :
                   (<input id="{inputStatusCampaign}"
-                  className="btn btn-sm btn-block w-100 fw-bold" 
-                  type="submit" value="Provide Training" style={campaignStyle} />
-                  )                   
-               )
-              :
-              null
+                    className="btn btn-sm btn-block w-100 fw-bold"
+                    type="submit" value="Provide Training" style={campaignStyle} />
+                  )
+                )
+                :
+                null
               }
             </form>
           </div>

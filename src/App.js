@@ -116,6 +116,7 @@ function App() {
             setManager={setManager}
             userStatusCampaign={userStatusCampaign}
             setUserStatusCampaign={setUserStatusCampaign}
+            currentCampaign={currentCampaign}
           />} />
           <Route path="/login" element={<Login
             setUserFirstName={setUserFirstName}
@@ -151,7 +152,8 @@ function App() {
           <Route path="/skillstovalidate/:id" element={<SkillsToValidate
             userFirstName={userFirstName}
             userLastName={userLastName}
-            team={team}            
+            team={team}
+            currentCampaign={currentCampaign}            
           />}
           />
           <Route path="/userskills/campaign/:campaignId" element={<SkillsCampaignToCreate

@@ -15,6 +15,7 @@ function SkillsToValidate(props) {
     let firstname = props.userFirstName
     let lastname = props.userLastName
     let team = props.team
+    let currentCampaign = props.currentCampaign
     let userIdParam = useParams();
 
     let titleH1Style = { color: '#131f1f', letterSpacing: '5px', fontSize: '1.75em' }
@@ -62,13 +63,15 @@ function SkillsToValidate(props) {
             )
     }, [])
 
+    console.log("VALIDATE",currentCampaign)
+
     return (
         <div className="container py-5 h-100">
             <div className="container pt-4" style={rowTitleStyle}>
                 <div className="row align-items-center justify-content-start pb-4" >
                     <div className='col-6'>
                         <h1 style={titleH1Style}>SKILLS TO VALIDATE</h1>
-                    </div>
+                    </div>                    
                     <div className="col-4 offset-md-2">
                         <div className="card" >
                             <div className="card-body py-0">
@@ -87,7 +90,7 @@ function SkillsToValidate(props) {
                         <div className="col-9 justify-content-center ">
                             <div className="card py-3" style={cardTitle}>
                                 <div className="card-body py-0">
-                                    <h5 className="card-title text-center" style={cardTitleStyle}>Status Campaign</h5>
+                                    <h5 className="card-title text-center" style={cardTitleStyle}>Campaign</h5>
                                     <h6 className="card-subtitle mb-2 text-center fw-bold" style={cardTitleStyle}>Submitted</h6>
                                     <p className="card-text"></p>
                                 </div>
@@ -120,7 +123,7 @@ function SkillsToValidate(props) {
                         <div className="col-9 justify-content-center">
                             <div className="card py-3" style={cardTitle}>
                                 <div className="card-body py-0">
-                                    <h5 className="card-title text-center" style={cardTitleStyle}>Status Campaign</h5>
+                                    <h5 className="card-title text-center" style={cardTitleStyle}>Campaign</h5>
                                     <h6 className="card-subtitle mb-2 text-center fw-bold" style={cardTitleStyle}>In Progress</h6>
                                     <p className="card-text"></p>
                                 </div>

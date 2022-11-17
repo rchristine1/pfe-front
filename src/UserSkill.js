@@ -7,6 +7,7 @@ import { ROLE_TEAMLEADER } from './Login'
 import { BsCheckCircleFill } from 'react-icons/bs';
 
 
+
 function UserSkillRow(props) {
   let [userSkill, setUserSkill] = useState(props.userSkill)
   let actionState = props.actionState
@@ -85,7 +86,7 @@ function UserSkillRow(props) {
             onChange={event => handleChange(event, userSkill.userSkillId)}
           >
             <label className="" htmlFor='userskillmark'></label>
-            {(actionState === ROLE_TEAMMEMBER) 
+            {(actionState === ROLE_TEAMMEMBER)
               ?
               (userStatusCampaign === 'INITIALIZED')
                 ?
@@ -98,7 +99,8 @@ function UserSkillRow(props) {
                   ) : (
                     <input id={inputMarkId} className="form-control form-control-sm border-danger "
                       type="number" defaultValue=" " name="userskillmark" style={rowStyles}
-                      min="0" max="2"
+                      min="0" max="2" toggle="tooltip" data-placement="right"
+                      title="0: low 1: intermediate 2: expert"
                     />
                   )
                 )
@@ -109,7 +111,7 @@ function UserSkillRow(props) {
                 )
               :
               (userStatusCampaign === 'VALIDATED')
-                ? 
+                ?
                 (<input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledStyle}
                   type="number" defaultValue={userSkill.mark} name="userskillmark"
                   min="0" max="2" disabled />
@@ -117,21 +119,23 @@ function UserSkillRow(props) {
                 :
                 (userSkill.statusSkill === "MARKED"
                   ?
-                   (
-                      <input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledToValidateStyle}
-                        type="number" defaultValue={userSkill.mark} name="userskillmark"
-                        min="0" max="2"
-                      />
-                    ) 
-                  : (
-                      <input id={inputMarkId} className="form-control form-control-sm  "
-                        type="number" defaultValue={userSkill.mark} name="userskillmark" style={buttonFilledStyle}
-                        min="0" max="2"
-                      />
-                    )
+                  (
+                    <input id={inputMarkId} className="form-control form-control-sm" style={buttonFilledToValidateStyle}
+                      type="number" defaultValue={userSkill.mark} name="userskillmark"
+                      min="0" max="2" toggle="tooltip" data-placement="right"
+                      title="0: low 1: intermediate 2: expert"
+                    />
                   )
+                  : (
+                    <input id={inputMarkId} className="form-control form-control-sm  "
+                      type="number" defaultValue={userSkill.mark} name="userskillmark" style={buttonFilledStyle}
+                      min="0" max="2"
+                    />
+                  )
+                )
             }
           </form>
+          
         </td>
         {(actionState === ROLE_TEAMLEADER)
           ?
@@ -165,22 +169,42 @@ function UserSkillRow(props) {
             ?
             ((userStatusCampaign === 'SUBMITTED') || (userStatusCampaign === 'IN_PROGRESS')
               ?
-              (<form className="row "
-                onChange={event => handleChangeStatus(event, userSkill.userSkillId)}
-              >
-                <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}>
-                  <option selected>Select the action</option>
-                  <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
-                  <option value={USERSKILL_STATUS_VALIDATED}>{USERSKILL_STATUS_VALIDATED}</option>
-                </select>
-                <label className="" htmlFor='updatedStatus'></label>
-              </form>
-              )
-              :
-              null
-            )
+              (userSkill.statusSkill === 'REVISED')
+                ?
+                (<form className="row "
+                  onChange={event => handleChangeStatus(event, userSkill.userSkillId)}
+                >
+                  <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}
+                    toggle="tooltip" data-placement="right"
+                    title="TO_BE_TRAINED: if a training is needed (even you revised the mark)
+                    Nothing if no training needed"
+                  >
+                    <option selected>Select the action</option>
+                    <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
+                    
+                  </select>
+                  <label className="" htmlFor='updatedStatus'></label>
+                </form>
+                )
+                :
+                (<form className="row "
+                  onChange={event => handleChangeStatus(event, userSkill.userSkillId)}
+                >
+                  <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}
+                    toggle="tooltip" data-placement="right"
+                    title="VALIDATED: if you don't want to change the mark
+                    TO_BE_TRAINED: if a training is needed (even you revised the mark)"
+                  >
+                    <option selected>Select the action</option>
+                    <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
+                    <option value={USERSKILL_STATUS_VALIDATED}>{USERSKILL_STATUS_VALIDATED}</option>
+                  </select>
+                </form>)
             :
             null
+            )
+          :
+          null
           }
         </td>
         <td className="col-1" style={rowStyles}></td>
