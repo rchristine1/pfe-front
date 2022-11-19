@@ -49,6 +49,7 @@ class Login extends React.Component {
           this.props.setUserRoles(ROLE_TEAMLEADER)
           this.props.history(`/welcometeamleader`)
         }
+        
       }).catch(() => {
         this.setState({ showModal: true })
       })
