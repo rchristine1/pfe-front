@@ -14,9 +14,9 @@ import Navbar from './Navbar';
 import { Error } from './Error';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import { BsFilePerson } from 'react-icons/bs';
 import UserConnected from './UserConnected';
 import axios from 'axios';
+//<script type="module" src="./lib/axios.js"></script>
 import "bootstrap/dist/css/bootstrap.min.css";
 export const AUTH_TOKEN_KEY = 'mtup-authenticationToken';
 

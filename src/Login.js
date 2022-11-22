@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import SimpleModal from './SimpleModal';
 import axios from 'axios';
+//<script type="module" src="./lib/axios.js"></script>
 import { Link, useNavigate } from "react-router-dom";
 import { AUTH_TOKEN_KEY } from './App'
 import './Login.css';

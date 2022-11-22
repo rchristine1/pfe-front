@@ -1,11 +1,11 @@
 
-import React, { Component } from 'react'
+import React from 'react'
 //import SimpleModal from './SimpleModal';
 import axios from 'axios';
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { AUTH_TOKEN_KEY } from './App'
+//<script type="module" src="./lib/axios.js"></script>
+import { Link } from "react-router-dom";
+import { useEffect } from 'react'
 import './UserSkills.css';
-import { useState, useEffect } from 'react';
 
 
 function WelcomeTeamLeader(props) {
@@ -24,9 +24,7 @@ function WelcomeTeamLeader(props) {
   let activitiesButtonStyle = { color: '#ffff', backgroundColor: '#609f9f' }
 
   useEffect(() => {
-    axios('/managers/' + id, {
-      method: 'GET',
-    })
+    axios.get('/managers/' + id)
       .then((response) => {
         setTeam(response.data.team)
       }, (error) => {
@@ -46,8 +44,8 @@ function WelcomeTeamLeader(props) {
           <div className="col-4 offset-md-2">
             <div className="card" >
               <div className="card-body py-0">
-                <h5 className="card-title text-end" style={cardTitleStyle}>{firstname} {lastname}</h5>
-                <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>{team}</h6>
+                <h5 className="card-title text-end" data-testid="fullname" style={cardTitleStyle}>{firstname} {lastname}</h5>
+                <h6 className="card-subtitle mb-2 text-end" data-testid="team" style={cardSubTitleStyle}>{team}</h6>
                 <p className="card-text"></p>
               </div>
             </div>
@@ -86,7 +84,7 @@ function WelcomeTeamLeader(props) {
                   <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
                 </div>
               </div>
-            </div>            
+            </div>
           </div>
         </div>
       </div>

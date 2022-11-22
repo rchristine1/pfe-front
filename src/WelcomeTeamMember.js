@@ -75,7 +75,7 @@ function WelcomeTeamMember(props) {
           <div className="col-4 offset-md-2">
             <div className="card" >
               <div className="card-body py-0">
-                <h5 className="card-title text-end" style={cardTitleStyle}>{firstname} {lastname}</h5>
+                <h5 className="card-title text-end" style={cardTitleStyle} data-testid="fullname">{firstname} {lastname}</h5>
                 <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>{manager}</h6>
                 <p className="card-text"></p>
               </div>

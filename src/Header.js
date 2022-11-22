@@ -25,12 +25,12 @@ export default function Header(props) {
                 <div className="row">
                     <div className="col-md-4 d-flex text-center text-justify" style={userStyle}>
                         <BsFillPersonFill className="mt-6" style={iconStyle} />
-                        <span className="ms-2 fw-bold">{firstname} {lastname}</span>
-                        <span className="ms-4 border-5 fw-light  " >{role}</span>
+                        <span className="ms-2 fw-bold" data-testid="fullname">{firstname} {lastname}</span>
+                        <span className="ms-4 border-5 fw-light" data-testid="rolename">{role}</span>
                         <hr style={headerStyle} />
                     </div>
                     <div className="col-md-4">
-                        <a href="#" className="navbar-brand " style={styleTitle} >
+                        <a href="#" className="navbar-brand " style={styleTitle} data-testid="applicationName">
                             MY TEAM
                             <span className="px-6 me-0 ms-2 mt-2">
                                 <img className="rounded-circle picture-style"
