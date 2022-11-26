@@ -11,6 +11,7 @@ import { BsCheckCircleFill } from 'react-icons/bs';
 function UserSkillRow(props) {
   let [userSkill, setUserSkill] = useState(props.userSkill)
   let actionState = props.actionState
+  let errorMessage400=""
 
   let expandedRows = props.expandedRows
   let userStatusCampaign = props.userStatusCampaign
@@ -31,6 +32,11 @@ function UserSkillRow(props) {
   let rowFinishedStyle = { color: '#609f9f' }
   let buttonFilledToValidateStyle = { backgroundColor: "#fff" }
 
+  if (actionState === ROLE_TEAMMEMBER) {
+    errorMessage400 = "Skill not updated. Mark should be 0,1 or 2."
+  } else {
+    errorMessage400 = "skill not updated, mark is the same."
+  }
 
   function handleChangeStatus(event, userSkillId) {
     event.preventDefault();
@@ -48,8 +54,11 @@ function UserSkillRow(props) {
         console.log("skill updated")
       }, (error) => {
         if (error.response.status === 400) {
-          console.log("Bad request")
-          alert("skill not updated. ")
+          alert("Status not authorized, it should be validated or to_be_trained. ")
+        } else if (error.response.status === 404) {
+          alert("User or UserSkill not found. ")
+        } else {
+          alert("Technical error")
         }
       })
   }
@@ -69,8 +78,11 @@ function UserSkillRow(props) {
         console.log("skill updated")
       }, (error) => {
         if (error.response.status === 400) {
-          console.log("Bad request")
-          alert("skill not updated. Mark should be 0,1 or 2")
+          alert(errorMessage400)
+        } else if (error.response.status === 404) {
+          alert("User or UserSkill not found. ")
+        } else {
+          alert("Mark can't be null")
         }
       })
   }
@@ -135,7 +147,7 @@ function UserSkillRow(props) {
                 )
             }
           </form>
-          
+
         </td>
         {(actionState === ROLE_TEAMLEADER)
           ?
@@ -177,11 +189,11 @@ function UserSkillRow(props) {
                   <select className="form-select form-control-sm p-0" name="updatedStatus" id={selectedStatusId} style={actionStyle}
                     toggle="tooltip" data-placement="right"
                     title="TO_BE_TRAINED: if a training is needed (even you revised the mark)
-                    Nothing if no training needed"
+                    Nothing to do if no training needed"
                   >
                     <option selected>Select the action</option>
                     <option value={USERSKILL_STATUS_TO_BE_TRAINED}>{USERSKILL_STATUS_TO_BE_TRAINED}</option>
-                    
+
                   </select>
                   <label className="" htmlFor='updatedStatus'></label>
                 </form>
@@ -200,11 +212,11 @@ function UserSkillRow(props) {
                     <option value={USERSKILL_STATUS_VALIDATED}>{USERSKILL_STATUS_VALIDATED}</option>
                   </select>
                 </form>)
+              :
+              null
+            )
             :
             null
-            )
-          :
-          null
           }
         </td>
         <td className="col-1" style={rowStyles}></td>

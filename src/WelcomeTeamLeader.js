@@ -1,96 +1,91 @@
-
 import React from 'react'
-//import SimpleModal from './SimpleModal';
 import axios from 'axios';
-//<script type="module" src="./lib/axios.js"></script>
-import { Link } from "react-router-dom";
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react';
+import Error from './components/Error';
+import Title from './components/Title.js'
+import Card from './components/Card.js'
 import './UserSkills.css';
-
 
 function WelcomeTeamLeader(props) {
   let history = props.history
+  let titleH1 = "MY ACTIVITIES"
   let firstname = props.userFirstName
   let lastname = props.userLastName
   let id = props.userId
   let team = props.team
   let setTeam = props.setTeam
+  let currentCampaign = props.currentCampaign
+  let setCurrentCampaign = props.setCurrentCampaign
+  let [display, setDisplay] = useState(false)
+  let [title, setTitle] = useState('')
 
-  let titleH1Style = { color: '#131f1f', letterSpacing: '5px', fontSize: '1.75em' }
-  let cardTitleStyle = { color: '#609f9f' }
-  let cardSubTitleStyle = { color: '#bfd8d8' }
-  let rowTitleStyle = { backgroundColor: '#eff5f5' }
   let activitiesStyle = { marginTop: '30px' }
-  let activitiesButtonStyle = { color: '#ffff', backgroundColor: '#609f9f' }
 
   useEffect(() => {
     axios.get('/managers/' + id)
       .then((response) => {
+        setDisplay(false)
         setTeam(response.data.team)
       }, (error) => {
         if (error.response.status === 403 || error.response.status === 401) {
+          setDisplay(true)
+          setTitle("Connection failed")
           history("/login")
+        } else if (error.response.status === 404) {
+          setDisplay(true)
+          setTitle("Manager not found")
+        } else {
+          setDisplay(true)
+          setTitle("Technical error")
         }
       }
       )
   }, [])
-  return (
+
+  useEffect(() => {
+    axios('/campaigns', {
+      method: 'GET',
+      params: { status: 'CURRENT' },
+    })
+      .then((response) => {
+        setDisplay(false)
+        setCurrentCampaign(response.data)
+      }, (error) => {
+        if (error.response.status === 403 || error.response.status === 401) {
+          history("/login")
+        } else if (error.response.status === 404) {
+          setDisplay(true)
+          setTitle("Current campaign not found ")
+        } else {
+          setDisplay(true)
+          setTitle("Technical Error ")
+        }
+      }
+      )
+  }, [])
+
+  return (<>
     <div className="container py-5 h-100">
-      <div className="container pt-4" style={rowTitleStyle}>
-        <div className="row align-items-center justify-content-start pb-4" >
-          <div className='col-6'>
-            <h1 style={titleH1Style}>MY ACTIVITIES</h1>
-          </div>
-          <div className="col-4 offset-md-2">
-            <div className="card" >
-              <div className="card-body py-0">
-                <h5 className="card-title text-end" data-testid="fullname" style={cardTitleStyle}>{firstname} {lastname}</h5>
-                <h6 className="card-subtitle mb-2 text-end" data-testid="team" style={cardSubTitleStyle}>{team}</h6>
-                <p className="card-text"></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Title firstname={firstname} lastname={lastname} details={team} titleH1={titleH1} displayUser={true} />
+      <Error display={display} title={title} />
       <div className="col-md-8 offset-md-2" style={activitiesStyle}>
         <div className="container">
           <div className="row pb-3">
             <div className="col-md-5 pb-3">
-              <div className="card shadow">
-                <div className="card-body">
-                  <h5 className="card-title">Validate Skills</h5>
-                  <p className="card-text"></p>
-                  <Link className="btn btn-sm Hover" to={`/skillstovalidate/${id}`} onClick={event => {
-                    history(`/skillstovalidate/${id}`);
-
-                  }} style={activitiesButtonStyle}>Go</Link>
-                </div>
-              </div>
+              <Card titleCard="Validate Skills" link="/skillstovalidate" id={id} history={history} go="Go" />
             </div>
             <div className="col-sm-5 pb-3">
-              <div className="card shadow">
-                <div className="card-body">
-                  <h5 className="card-title">Organize Trainings</h5>
-                  <p className="card-text"></p>
-                  <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
-                </div>
-              </div>
+              <Card titleCard="Organize Trainings" go="Go" displayGo={false} />
             </div>
             <div className="col-sm-5 pb-3">
-              <div className="card shadow">
-                <div className="card-body">
-                  <h5 className="card-title">Follow Trainings</h5>
-                  <p className="card-text"></p>
-                  <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
-                </div>
-              </div>
+              <Card titleCard="Follow Trainings" go="Go" displayGo={false} />
             </div>
           </div>
         </div>
       </div>
     </div>
+  </>
   );
-
 }
 
 export default WelcomeTeamLeader;

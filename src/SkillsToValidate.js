@@ -6,7 +6,9 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AUTH_TOKEN_KEY } from './App'
 import './UserSkills.css';
 import { useState, useEffect } from 'react';
-import TeamMemberSkills from './TeamMemberSkills';
+import Error from './components/Error.js'
+import Title from './components/Title.js'
+import TeamMemberSkills from './components/TeamMemberSkills';
 
 function SkillsToValidate(props) {
     let [teamMembersSubmitted, setTeamMembersSubmitted] = useState([])
@@ -17,39 +19,49 @@ function SkillsToValidate(props) {
     let team = props.team
     let currentCampaign = props.currentCampaign
     let userIdParam = useParams();
+    let [display, setDisplay] = useState(false)
+    let [title, setTitle] = useState('')
+    let titleH1 = "SKILLS TO VALIDATE"
 
-    let titleH1Style = { color: '#131f1f', letterSpacing: '5px', fontSize: '1.75em' }
-    let cardTitleStyle = { color: '#609f9f' }
-    let cardSubTitleStyle = { color: '#bfd8d8' }
-    let rowTitleStyle = { backgroundColor: '#eff5f5' }
+    let cardTitleStyle = { color: '#4c7f7f' }
     let activitiesStyle = { marginTop: '30px' }
     let cardTitle = { backgroundColor: '#eff5f5' }
 
 
 
+
     useEffect(() => {
-        axios('/teammembers/manager/' + Object.values(userIdParam), {
+        axios('/teammembers', {
             method: 'GET',
             params: {
-                status: 'SUBMITTED'
+                status: 'SUBMITTED',
+                managerId: userIdParam['id']
             },
 
         })
             .then((response) => {
+                setDisplay(false)
                 setTeamMembersSubmitted(response.data)
             }, (error) => {
                 if (error.response.status === 403 || error.response.status === 401) {
                     history("/login")
+                } else if (error.response.status === 404) {
+                    setDisplay(true)
+                    setTitle("Manager not found")
+                } else {
+                    setDisplay(true)
+                    setTitle("Technical error")
                 }
             }
             )
     }, [])
 
     useEffect(() => {
-        axios('/teammembers/manager/' + Object.values(userIdParam), {
+        axios('/teammembers', {
             method: 'GET',
             params: {
-                status: "IN_PROGRESS"
+                status: "IN_PROGRESS",
+                managerId: userIdParam['id']
             },
 
         })
@@ -58,31 +70,22 @@ function SkillsToValidate(props) {
             }, (error) => {
                 if (error.response.status === 403 || error.response.status === 401) {
                     history("/login")
+                } else if (error.response.status === 404) {
+                    setDisplay(true)
+                    setTitle("Manager not found")
+                } else {
+                    setDisplay(true)
+                    setTitle("Technical error")
                 }
             }
             )
     }, [])
 
-    console.log("VALIDATE",currentCampaign)
-
     return (
         <div className="container py-5 h-100">
-            <div className="container pt-4" style={rowTitleStyle}>
-                <div className="row align-items-center justify-content-start pb-4" >
-                    <div className='col-6'>
-                        <h1 style={titleH1Style}>SKILLS TO VALIDATE</h1>
-                    </div>                    
-                    <div className="col-4 offset-md-2">
-                        <div className="card" >
-                            <div className="card-body py-0">
-                                <h5 className="card-title text-end" style={cardTitleStyle}>{firstname} {lastname}</h5>
-                                <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>{team}</h6>
-                                <p className="card-text"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Title firstname={firstname} lastname={lastname} details={team} titleH1={titleH1} displayUser={true}
+            />
+            <Error display={display} title={title} />
             <div className="col-md-12" style={activitiesStyle}>
                 <div className="container">
                     <div className="row py-3">

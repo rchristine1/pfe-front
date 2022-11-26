@@ -8,10 +8,11 @@ import WelcomeTeamLeader from './WelcomeTeamLeader';
 import WelcomeTeamMember from './WelcomeTeamMember';
 import SkillsToValidate from './SkillsToValidate';
 import SkillsCampaignToCreate from './SkillsCampaignToCreate';
-import Header from './Header';
+import Header from './components/Header';
 import Logout from './Logout';
-import Navbar from './Navbar';
-import { Error } from './Error';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Contact from './Contact';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import UserConnected from './UserConnected';
@@ -31,6 +32,7 @@ function App() {
   let [currentCampaign, setCurrentCampaign] = useState('')
   let [statusVolunteer, setStatusVolunteer] = useState('')
   let [loading, setLoading] = useState(false)
+  let [showModal, setShowModal] = useState(false)
   let history = useNavigate();
   let location = useLocation();
 
@@ -73,7 +75,6 @@ function App() {
   }*/
   //12-11
   useEffect(() => {
-
     axios.interceptors.request.use(function (request) {
       const token = sessionStorage.getItem(AUTH_TOKEN_KEY)
       if (token) {
@@ -84,7 +85,6 @@ function App() {
     }, (error) => {
       if (error.response.status == 403) {
         console.log("Erreur 403")
-
       }
       setLoading(false)
       return Promise.reject(error);
@@ -134,8 +134,12 @@ function App() {
             userLastName={userLastName}
             userId={userId}
             team={team}
+            currentCampaign={currentCampaign}
+            setCurrentCampaign={setCurrentCampaign}
             setTeam={setTeam}
-            history={history} />} />
+            history={history}
+          />}
+          />
           <Route path="/welcometeammember" element={<WelcomeTeamMember
             userFirstName={userFirstName}
             userLastName={userLastName}
@@ -153,7 +157,7 @@ function App() {
             userFirstName={userFirstName}
             userLastName={userLastName}
             team={team}
-            currentCampaign={currentCampaign}            
+            currentCampaign={currentCampaign}
           />}
           />
           <Route path="/userskills/campaign/:campaignId" element={<SkillsCampaignToCreate
@@ -166,7 +170,6 @@ function App() {
             userId={userId}
             history={history}
           />} />
-          <Route path="/error" element={<Error />} />
           <Route path="/logout" element={<Logout history={history} />} />
           <Route path="*" element={<Login
             setUserFirstName={setUserFirstName}
@@ -178,8 +181,10 @@ function App() {
             userId={userId}
             userRoles={userRoles}
           />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>
+      <Footer />
     </div>
   )
 }

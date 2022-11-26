@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { ROLE_TEAMMEMBER } from './Login'
-import { ROLE_TEAMLEADER } from './Login'
+import { ROLE_TEAMMEMBER } from '../Login'
+import { ROLE_TEAMLEADER } from '../Login'
 
 function Navbar(props) {
     let userRole = props.userRoles

@@ -1,8 +1,9 @@
 
 import React, { Component } from 'react'
-//import SimpleModal from './SimpleModal';
 import axios from 'axios';
-import { Link } from "react-router-dom";
+import Error from './components/Error.js'
+import Title from './components/Title.js'
+import Card from './components/Card.js'
 
 import './UserSkills.css';
 
@@ -10,6 +11,7 @@ import { useState, useEffect } from 'react';
 
 function WelcomeTeamMember(props) {
   let history = props.history
+  let titleH1 = "MY ACTIVITIES"
   let firstname = props.userFirstName
   let lastname = props.userLastName
   let id = props.userId
@@ -21,97 +23,71 @@ function WelcomeTeamMember(props) {
   let setUserStatusCampaign = props.setUserStatusCampaign
   let setStatusVolunteer = props.setStatusVolunteer
   let statusVolunteer = props.statusVolunteer
+  let [display, setDisplay] = useState(false)
+  let [title, setTitle] = useState('')
 
-  let titleH1Style = { color: '#131f1f', letterSpacing: '5px', fontSize: '1.75em' }
-  let cardTitleStyle = { color: '#609f9f' }
-  let cardSubTitleStyle = { color: '#bfd8d8' }
-  let rowTitleStyle = { backgroundColor: '#eff5f5' }
   let activitiesStyle = { marginTop: '30px' }
-  let activitiesButtonStyle = { color: '#ffff', backgroundColor: '#609f9f' }
 
   useEffect(() => {
     axios('/teammembers/' + id, {
       method: 'GET',
     })
       .then((response) => {
-        setManager(response.data.manager)
+        setDisplay(false)
+        setManager(response.data.fullNameManager)
         setUserStatusCampaign(response.data.statusCurrentCampaign)
         setStatusVolunteer(response.data.statusVolunteerTrainer)
       }, (error) => {
         if (error.response.status === 403 || error.response.status === 401) {
+          alert("Connection failed")
           history("/login")
+        } else {
+          setDisplay(true)
+          setTitle("TeamMember not found")
         }
       }
       )
   }, [])
 
   useEffect(() => {
-    axios('/campaign/status', {
+    axios('/campaigns', {
       method: 'GET',
-      params: {
-        status: 'CURRENT'
-      },
+      params: { status: 'CURRENT' },
     })
       .then((response) => {
+        setDisplay(false)
         setCurrentCampaign(response.data)
-        console.log("CAMPAIGN")
       }, (error) => {
         if (error.response.status === 403 || error.response.status === 401) {
           history("/login")
+        } else if (error.response.status === 404) {
+          setDisplay(true)
+          setTitle("Current campaign not found ")
+        } else {
+          setDisplay(true)
+          setTitle("Technical Error ")
         }
       }
       )
   }, [])
 
-  console.log("WELCOME", userStatusCampaign)
-  console.log("WELCOME", statusVolunteer)
   return (
     <div className="container py-5 h-100">
-      <div className="container pt-4" style={rowTitleStyle}>
-        <div className="row align-items-center justify-content-start pb-4" >
-          <div className='col-6'>
-            <h1 style={titleH1Style}>MY ACTIVITIES</h1>
-          </div>
-          <div className="col-4 offset-md-2">
-            <div className="card" >
-              <div className="card-body py-0">
-                <h5 className="card-title text-end" style={cardTitleStyle} data-testid="fullname">{firstname} {lastname}</h5>
-                <h6 className="card-subtitle mb-2 text-end" style={cardSubTitleStyle}>{manager}</h6>
-                <p className="card-text"></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Title firstname={firstname} lastname={lastname} details={manager} titleH1={titleH1} displayUser={true} />
+      <Error display={display} title={title} />
       <div className="col-md-8 offset-md-2" style={activitiesStyle}>
         <div className="container">
           <div className="row pb-3 ">
             {(userStatusCampaign === 'OPENED') || (userStatusCampaign === null) ?
               (<div className="col-md-5 pb-3">
-                <div className="card shadow ">
-                  <div className="card-body">
-                    <h5 className="card-title">Initialize My Skills</h5>
-                    <p className="card-text"></p>
-                    <Link className="btn btn-sm Hover" to={`/userskills/campaign/${currentCampaign.id}`} onClick={event => {
-                      history(`/userskills/campaign/${currentCampaign.id}`);
-                    }} style={activitiesButtonStyle}>Go</Link>
-                  </div>
-                </div>
+                <Card titleCard="Initialize My Skills" link="/userskills/campaign" id={currentCampaign.id} history={history} go="Go" />
               </div>) :
               null
             }
-            {(userStatusCampaign === "INITIALIZED") 
+            {(userStatusCampaign === "INITIALIZED")
               ?
               (<div className="col-md-5 pb-3">
-                <div className="card shadow">
-                  <div className="card-body">
-                    <h5 className="card-title">Evaluate My Skills</h5>
-                    <p className="card-text"></p>
-                    <Link className="btn btn-sm Hover" to={`/userskills/${id}`} onClick={event => {
-                      history(`/userskills/${id}`);
-                    }} style={activitiesButtonStyle}>Go</Link>
-                  </div>
-                </div>
+                <Card titleCard="Evaluate My Skills" link="/userskills" id={id} history={history} go="Go" />
               </div>)
               :
               null
@@ -119,52 +95,26 @@ function WelcomeTeamMember(props) {
             {(userStatusCampaign === 'VALIDATED') || (userStatusCampaign === 'SUBMITTED') || (userStatusCampaign === 'IN_PROGRESS')
               ?
               (<div className="col-md-5 pb-3">
-                <div className="card shadow">
-                  <div className="card-body">
-                    <h5 className="card-title">Display My Skills</h5>
-                    <p className="card-text"></p>
-                    <Link className="btn btn-sm Hover" to={`/userskills/${id}`} onClick={event => {
-                      history(`/userskills/${id}`);
-                    }} style={activitiesButtonStyle}>Go</Link>
-                  </div>
-                </div>
+                <Card titleCard="Display My Skills" link="/userskills" id={id} history={history} go="Go" />
               </div>)
               :
               null
             }
             {(statusVolunteer === 'UNKNOWN') || (statusVolunteer === null) ?
               (<div className="col-md-5 pb-3">
-                <div className="card shadow">
-                  <div className="card-body">
-                    <h5 className="card-title">Volunteer to train ?</h5>
-                    <p className="card-text"></p>
-                    <a href="#" className="btn btn-sm Hover" disabled style={activitiesButtonStyle}>Go</a>
-                  </div>
-                </div>
+                <Card titleCard="Volunteer to train ?" go="Go" displayGo={false} />
               </div>) :
               null
             }
             {(userStatusCampaign === 'IN_PROGRESS') ?
               (<div className="col-md-5 pb-3">
-                <div className="card shadow">
-                  <div className="card-body">
-                    <h5 className="card-title">My Trainings</h5>
-                    <p className="card-text"></p>
-                    <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
-                  </div>
-                </div>
+                <Card titleCard="My Trainings" go="Go" displayGo={false} />
               </div>) :
               null
             }
             {(statusVolunteer === 'VOLUNTEER') ?
               (<div className="col-md-5 pb-3">
-                <div className="card shadow">
-                  <div className="card-body">
-                    <h5 className="card-title">Manage My Trainings</h5>
-                    <p className="card-text"></p>
-                    <a href="#" className="btn btn-sm Hover" style={activitiesButtonStyle}>Go</a>
-                  </div>
-                </div>
+                <Card titleCard="Manage My Trainings" go="Go" displayGo={false} />
               </div>) :
               (null)
             }

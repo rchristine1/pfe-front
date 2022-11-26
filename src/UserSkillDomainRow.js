@@ -30,12 +30,14 @@ class UserSkillDomainRow extends React.Component {
         return (
             <tr>
                 <th colSpan="6" style={domainStyles}  >
-                    <Button className="Hover"
+                    <Button className="Hover-icon"
                         variant="link"
                         onClick={event => handleEpandRow(event, domain)}>
                         {
                             this.props.expandState[domain] ?
-                                <RiArrowUpCircleFill style={iconStyles} /> : <RiArrowDownCircleFill style={iconStyles} />
+                                <RiArrowUpCircleFill style={iconStyles} toggle="tooltip" 
+                                title="Click here to close this domain"/> : <RiArrowDownCircleFill style={iconStyles} toggle="tooltip" 
+                                title="Click here to evaluate your skills"/>
                         }
                     </Button>
                     <span>{domain}</span>

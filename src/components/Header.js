@@ -1,8 +1,8 @@
 import { BsFillPersonFill } from 'react-icons/bs';
 import { Link } from "react-router-dom";
-import { ROLE_TEAMMEMBER } from './Login'
-import { ROLE_TEAMLEADER } from './Login'
-import {AUTH_TOKEN_KEY} from './App'
+import { ROLE_TEAMMEMBER } from '../Login'
+import { ROLE_TEAMLEADER } from '../Login'
+import {AUTH_TOKEN_KEY} from '../App'
 
 export default function Header(props) {
     let firstname = props.userFirstName

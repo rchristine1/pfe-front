@@ -1,18 +1,17 @@
 import React, { Component } from 'react'
 import SimpleModal from './SimpleModal';
 import axios from 'axios';
-//<script type="module" src="./lib/axios.js"></script>
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AUTH_TOKEN_KEY } from './App'
 import './Login.css';
-export const ROLE_TEAMMEMBER = "Team Member" 
-export const ROLE_TEAMLEADER = "Team Leader" 
+export const ROLE_TEAMMEMBER = "Team Member"
+export const ROLE_TEAMLEADER = "Team Leader"
 
 class Login extends React.Component {
-  
+
   constructor() {
     super();
-    this.state = { userData: {}, showModal: false }
+    this.state = { userData: {}, showModal: false, display: false, title: "" }
     this.handleChange = this.handleChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.handleCloseModal = this.handleCloseModal.bind(this)
@@ -35,14 +34,14 @@ class Login extends React.Component {
         const bearerToken = response?.headers?.authorization;
         if (bearerToken && bearerToken.slice(0, 7) === 'Bearer ') {
           const jwt = bearerToken.slice(7, bearerToken.length);
-          sessionStorage.setItem(AUTH_TOKEN_KEY, jwt)      
+          sessionStorage.setItem(AUTH_TOKEN_KEY, jwt)
         }
         this.props.setUserFirstName(response.data.firstname)
         this.props.setUserLastName(response.data.lastname)
         this.props.setUserId(response.data.id)
         let userRole = response.data.authorities
-        let userRoleTab = userRole.map( function(e) {return e.authority} )
-        
+        let userRoleTab = userRole.map(function (e) { return e.authority })
+
         if (userRoleTab.includes("ROLE_TEAMMEMBER")) {
           this.props.setUserRoles(ROLE_TEAMMEMBER)
           this.props.history(`/welcometeammember`)
@@ -50,7 +49,7 @@ class Login extends React.Component {
           this.props.setUserRoles(ROLE_TEAMLEADER)
           this.props.history(`/welcometeamleader`)
         }
-        
+
       }).catch(() => {
         this.setState({ showModal: true })
       })
@@ -61,8 +60,8 @@ class Login extends React.Component {
   }
 
   render() {
-    const title = "Login incorrect"
-    const bodyTxt = "Login ou mot de passe incorrect"
+    const title = "Authentication failed"
+    const bodyTxt = "Login or password incorrect"
 
     let titleH1 = { color: '#609f9f' }
     return (
@@ -109,7 +108,7 @@ class Login extends React.Component {
             </div>
           </div>
         </div>
-
+        <SimpleModal title={title} bodyTxt={bodyTxt} handleCloseModal={this.handleCloseModal} showModal={this.state.showModal} />
       </>
     )
   }

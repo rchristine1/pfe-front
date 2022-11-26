@@ -30,4 +30,4 @@ function isConnected(props)  {
     </>)
   }
 
-  export default UserConnected;
+  export default isConnected;
