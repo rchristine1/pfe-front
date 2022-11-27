@@ -11,7 +11,8 @@ import { BsCheckCircleFill } from 'react-icons/bs';
 function UserSkillRow(props) {
   let [userSkill, setUserSkill] = useState(props.userSkill)
   let actionState = props.actionState
-  let errorMessage400=""
+  let history = props.history
+  let errorMessage400 = ""
 
   let expandedRows = props.expandedRows
   let userStatusCampaign = props.userStatusCampaign
@@ -53,7 +54,9 @@ function UserSkillRow(props) {
         setUserSkill(response.data);
         console.log("skill updated")
       }, (error) => {
-        if (error.response.status === 400) {
+        if (error.response.status === 403 || error.response.status === 401) {
+          history("/login")
+        } else if (error.response.status === 400) {
           alert("Status not authorized, it should be validated or to_be_trained. ")
         } else if (error.response.status === 404) {
           alert("User or UserSkill not found. ")
@@ -77,7 +80,9 @@ function UserSkillRow(props) {
         setUserSkill(response.data);
         console.log("skill updated")
       }, (error) => {
-        if (error.response.status === 400) {
+        if (error.response.status === 403 || error.response.status === 401) {
+          history("/login")
+        } else if (error.response.status === 400) {
           alert(errorMessage400)
         } else if (error.response.status === 404) {
           alert("User or UserSkill not found. ")

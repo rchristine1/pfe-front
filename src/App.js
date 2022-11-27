@@ -158,6 +158,7 @@ function App() {
             userLastName={userLastName}
             team={team}
             currentCampaign={currentCampaign}
+            history={history}
           />}
           />
           <Route path="/userskills/campaign/:campaignId" element={<SkillsCampaignToCreate

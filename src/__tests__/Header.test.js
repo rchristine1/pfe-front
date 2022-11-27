@@ -1,4 +1,4 @@
-import AxiosTest from "../Header";
+import AxiosTest from "../components/Header";
 import { render } from "@testing-library/react";
 import { BrowserRouter } from 'react-router-dom';
 describe('Header', () => {

@@ -44,6 +44,7 @@ function SkillsToValidate(props) {
                 setTeamMembersSubmitted(response.data)
             }, (error) => {
                 if (error.response.status === 403 || error.response.status === 401) {
+                    console.log("Hello")
                     history("/login")
                 } else if (error.response.status === 404) {
                     setDisplay(true)
@@ -63,7 +64,6 @@ function SkillsToValidate(props) {
                 status: "IN_PROGRESS",
                 managerId: userIdParam['id']
             },
-
         })
             .then((response) => {
                 setTeamMembersInProgress(response.data)

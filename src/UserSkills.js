@@ -85,7 +85,7 @@ function UserSkillTable(props) {
       )
   }, [])
   console.log("currentcampaign", currentCampaign)
-  if (currentCampaign == " ") {
+  if (currentCampaign === " ") {
     setDisplay(true);
     setTitle("CurrentCampaign not found")
   }
@@ -106,7 +106,8 @@ function UserSkillTable(props) {
           setExpandedRows={setExpandedRows}
           setExpandState={setExpandState}
           expandState={expandState}
-          key={userSkill.labelDomain} />
+          key={userSkill.labelDomain}
+          history={history} />
       );
     }
     rows.push(
@@ -141,7 +142,8 @@ function UserSkillTable(props) {
         setUserStatusCampaign(response.data.statusCurrentCampaign);
         console.log("Status Campaign updated")
       }, (error) => {
-        if (error.response.status === 403) {
+        if (error.response.status === 403 || error.response.status === 401) {
+          history("/login")
           setDisplay(true)
           setTitle("Connection failed")
           history('/login')

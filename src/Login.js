@@ -26,6 +26,7 @@ class Login extends React.Component {
 
   onSubmit(event) {
     event.preventDefault();
+    sessionStorage.removeItem(AUTH_TOKEN_KEY)
     axios.post('/authenticate', {
       login: this.state.userData.login,
       password: this.state.userData.password
